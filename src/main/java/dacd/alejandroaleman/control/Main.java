@@ -14,23 +14,21 @@ import java.util.SortedMap;
 
 public class Main {
 
-    public static void loadWeatherData(){
+    public static List<WeatherInfo> loadWeatherData(){
         WeatherController weatherController = new WeatherController();
-        weatherController.getWeather();
+        return weatherController.getWeather();
     }
+
+    public static void saveWeatherData(){
+        return;
+    }
+
     public static void main(String[] args) {
 
-        loadWeatherData();
+        List<WeatherInfo> weatherInfoList = loadWeatherData();
 
-        /*
-        //WeatherData weatherDataObj = ConvertToWeatherDataObject(result);
-        JsonObject weatherDataObj = ConvertToJsonObject(result);
-        System.out.println(weatherDataObj.getAsJsonObject("city").get("name"));
-        JsonArray ForecastList = weatherDataObj.getAsJsonArray("list");
-        JsonObject ForecastObject = (JsonObject) ForecastList.get(13);
-        System.out.println(ForecastObject.get("dt_txt"));
 
-         */
+
 
     }
 

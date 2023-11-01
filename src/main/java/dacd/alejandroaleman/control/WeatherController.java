@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WeatherController {
-    public void getWeather(){
+    public List<WeatherInfo> getWeather(){
         List<Location> locationList = new ArrayList<>();
+        List<WeatherInfo> weatherInfoList = new ArrayList<>();
+
         locationList.add(new Location("La Graciosa", 29.2298950, -13.5050417));
         locationList.add(new Location("Lanzarote", 28.9611348, -13.5512381));
         locationList.add(new Location("Fuerteventura", 28.5010371, -13.8628859));
@@ -22,6 +24,9 @@ public class WeatherController {
             WeatherSupplier weatherSupplier = new WeatherSupplier();
             WeatherInfo weatherInfo = weatherSupplier.getWeatherInfo(object, locationList.get(i));
             System.out.println(weatherInfo.getLocation().getCity());
+            weatherInfoList.add(weatherInfo);
         }
+
+        return weatherInfoList;
     }
 }
