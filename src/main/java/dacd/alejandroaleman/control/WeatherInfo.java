@@ -12,6 +12,7 @@ public class WeatherInfo {
     private Location location;
     private LocalTime hourChecked;
     private LocalTime hour;
+    private String city;
 
     public WeatherInfo(double temperature, double precipitation, double humidity, double clouds, double windVelocity, Location location) {
         this.temperature = temperature;
