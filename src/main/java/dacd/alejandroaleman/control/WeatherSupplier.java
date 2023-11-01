@@ -24,7 +24,6 @@ public class WeatherSupplier {
         LocalTime currentTime = LocalTime.now();
         location.setCity(String.valueOf(jsonObject.getAsJsonObject("city").get("name")));
         WeatherInfo weatherInfo = new WeatherInfo(temperature, precipitation, humidity, clouds, windVelocity, location);
-        System.out.println(city + temperature+precipitation+humidity);
         System.out.println(forecastObject);
         System.out.println(forecastObject.get("dt_txt"));
 
