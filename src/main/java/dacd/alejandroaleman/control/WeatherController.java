@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WeatherController {
-    public List<WeatherInfo> getWeather(){
+    public List<WeatherInfo> execute(){
         List<Location> locationList = new ArrayList<>();
         List<WeatherInfo> weatherInfoList = new ArrayList<>();
 
@@ -20,9 +20,8 @@ public class WeatherController {
 
         for (int i = 0; i < locationList.size(); i++){
             OpenWeatherMapSupplier openWeatherMapSupplier = new OpenWeatherMapSupplier();
-            JsonObject object = openWeatherMapSupplier.ObtenerInfo(locationList.get(i));
-            WeatherSupplier weatherSupplier = new WeatherSupplier();
-            WeatherInfo weatherInfo = weatherSupplier.getWeatherInfo(object, locationList.get(i));
+            JsonObject object = openWeatherMapSupplier.getWeatherData(locationList.get(i));
+            WeatherInfo weatherInfo = openWeatherMapSupplier.getWeatherInfo(object, locationList.get(i));
             System.out.println(weatherInfo.getLocation().getCity());
             weatherInfoList.add(weatherInfo);
         }

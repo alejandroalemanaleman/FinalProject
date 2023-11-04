@@ -16,7 +16,7 @@ public class Main {
 
     public static List<WeatherInfo> loadWeatherData(){
         WeatherController weatherController = new WeatherController();
-        return weatherController.getWeather();
+        return weatherController.execute();
     }
 
     public static void saveWeatherData(){
