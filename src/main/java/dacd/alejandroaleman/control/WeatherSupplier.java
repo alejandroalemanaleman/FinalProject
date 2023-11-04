@@ -10,7 +10,14 @@ public class WeatherSupplier {
 
         String city = String.valueOf(jsonObject.getAsJsonObject("city").get("name"));
         JsonArray forecastList = jsonObject.getAsJsonArray("list");
-        JsonObject forecastObject = (JsonObject) forecastList.get(13);
+        System.out.println(forecastList);
+
+        // TODO implementar bucle que encuentre primera previcón que sea a las 12:00.
+        // y hacer uso de las interfaces.
+
+        JsonObject forecastObject = getForecast(forecastList);
+
+
         JsonObject objectMain = forecastObject.getAsJsonObject("main");
         JsonObject objectClouds = forecastObject.getAsJsonObject("clouds");
         JsonObject windObject = forecastObject.getAsJsonObject("wind");
@@ -29,4 +36,18 @@ public class WeatherSupplier {
 
         return weatherInfo;
     }
+
+    public JsonObject getForecast(JsonArray lista){
+
+        for (int i = 0; i < lista.size(); i++){
+            JsonObject forecast = (JsonObject) lista.get(i);
+            String date = String.valueOf(forecast.get("dt_txt"));
+            String substring = date.substring(12, 14);
+            if (substring.equals("00")){
+                return forecast;
+            }
+        }
+        return null;
+    }
+
 }
