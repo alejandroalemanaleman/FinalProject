@@ -19,14 +19,14 @@ public class Main {
         return weatherController.execute();
     }
 
-    public static void saveWeatherData(){
-        return;
+    public static void saveWeatherData(WeatherInfo weatherInfo){
+        SQLiteWeatherStore sqLiteWeatherStore = new SQLiteWeatherStore(weatherInfo);
     }
 
     public static void main(String[] args) {
 
         List<WeatherInfo> weatherInfoList = loadWeatherData();
-
+        saveWeatherData(weatherInfoList.get(0));
 
 
 
