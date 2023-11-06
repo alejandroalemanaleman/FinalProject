@@ -10,15 +10,20 @@ public class Main {
     }
 
 
-    public static void saveWeatherData(WeatherInfo weatherInfo){
-        SQLiteWeatherStore sqLiteWeatherStore = new SQLiteWeatherStore(weatherInfo);
+    public static void saveWeatherData(List<List<WeatherInfo>> weatherInfoList){
+        for (int i = 0; i < weatherInfoList.size(); i++) {
+            for (int j = 0; j < weatherInfoList.get(i).size(); j++){
+                SQLiteWeatherStore sqLiteWeatherStore = new SQLiteWeatherStore(weatherInfoList.get(i).get(j));
+            }
+        }
     }
 
 
     public static void main(String[] args) {
 
         List<List<WeatherInfo>>  weatherInfoList = loadWeatherData();
-        //saveWeatherData(weatherInfoList.get(0));
+        System.out.println(weatherInfoList.get(3).get(0).getLocation().getCity() + "   HOLA");
+        saveWeatherData(weatherInfoList);
 
 
 
