@@ -3,10 +3,10 @@ package dacd.alejandroaleman.control;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import java.time.LocalTime;
+import java.util.List;
 
 public interface WeatherSupplier {
-    WeatherInfo getWeatherInfo(JsonObject jsonObject, Location location);
-    JsonObject getForecast(JsonArray lista);
+    List<WeatherInfo> getWeatherInfo(JsonObject jsonObject, Location location);
+    List<JsonObject> getForecast(JsonArray lista);
     JsonObject getWeatherData (Location location);
     }

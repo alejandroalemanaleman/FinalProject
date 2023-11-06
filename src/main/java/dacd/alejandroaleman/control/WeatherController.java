@@ -5,9 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WeatherController {
-    public List<WeatherInfo> execute(){
+    public List<List<WeatherInfo>> execute(){
         List<Location> locationList = new ArrayList<>();
-        List<WeatherInfo> weatherInfoList = new ArrayList<>();
+        List<List<WeatherInfo>> weatherInfoOfAll = new ArrayList<>(); //LISTA FINAL
+
 
         locationList.add(new Location("LaGraciosa", 29.2298950, -13.5050417));
         locationList.add(new Location("Lanzarote", 28.9611348, -13.5512381));
@@ -18,15 +19,26 @@ public class WeatherController {
         locationList.add(new Location("LaPalma", 28.6837586, -17.7645926));
         locationList.add(new Location("ElHierro", 27.810376412061633, -17.91380238618073));
 
-        for (int i = 0; i < locationList.size(); i++){
-            OpenWeatherMapSupplier openWeatherMapSupplier = new OpenWeatherMapSupplier();
-            JsonObject object = openWeatherMapSupplier.getWeatherData(locationList.get(i));
-            WeatherInfo weatherInfo = openWeatherMapSupplier.getWeatherInfo(object, locationList.get(i));
-            System.out.println(weatherInfo.getLocation().getCity());
-            weatherInfoList.add(weatherInfo);
-            System.out.println(weatherInfo.toString());
-        }
+        OpenWeatherMapSupplier openWeatherMapSupplier = new OpenWeatherMapSupplier();
 
-        return weatherInfoList;
+        for (int i = 0; i < locationList.size(); i++){
+            JsonObject weatherData = openWeatherMapSupplier.getWeatherData(locationList.get(i));
+            List<WeatherInfo> weatherInfo = openWeatherMapSupplier.getWeatherInfo(weatherData, locationList.get(i));
+            weatherInfoOfAll.add(weatherInfo);
+
+            /*
+            System.out.println(weatherInfo.get().getLocation().getCity());
+            System.out.println(weatherInfo.get(i).toString());
+             */
+
+            //weatherInfoOfAll.add(i, weatherInfo);
+
+            /*
+            for (int i = 0; i < locationList.size(); i++){
+                recorrer lista de listas! ^^
+            }
+             */
+        }
+        return weatherInfoOfAll;
     }
 }
