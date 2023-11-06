@@ -25,19 +25,6 @@ public class WeatherController {
             JsonObject weatherData = openWeatherMapSupplier.getWeatherData(locationList.get(i));
             List<WeatherInfo> weatherInfo = openWeatherMapSupplier.getWeatherInfo(weatherData, locationList.get(i));
             weatherInfoOfAll.add(weatherInfo);
-
-            /*
-            System.out.println(weatherInfo.get().getLocation().getCity());
-            System.out.println(weatherInfo.get(i).toString());
-             */
-
-            //weatherInfoOfAll.add(i, weatherInfo);
-
-            /*
-            for (int i = 0; i < locationList.size(); i++){
-                recorrer lista de listas! ^^
-            }
-             */
         }
         return weatherInfoOfAll;
     }

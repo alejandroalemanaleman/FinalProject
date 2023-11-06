@@ -35,8 +35,8 @@ public class OpenWeatherMapSupplier implements WeatherSupplier{
 
             double temperature = objectMain.get("temp").getAsDouble();
             double precipitation = forecastObject.get("pop").getAsDouble();
-            double humidity = objectMain.get("humidity").getAsDouble();
-            double clouds = objectClouds.get("all").getAsDouble();
+            int humidity = objectMain.get("humidity").getAsInt();
+            int clouds = objectClouds.get("all").getAsInt();
             double windVelocity = windObject.get("speed").getAsDouble();
             String date = String.valueOf(forecastObject.get("dt_txt"));
 

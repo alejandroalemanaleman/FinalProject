@@ -26,7 +26,7 @@ public class Main extends TimerTask{
         Timer timer = new Timer();
         long delay = 0; // Iniciar de inmediato
         //long period = 6 * 60 * 60 * 1000; // 6 horas en milisegundos
-        long period = 1000 * 60 ; // cada minutp
+        long period = 100 * 60 ; // cada minutp
         timer.schedule(new Main(), delay, period);
     }
 

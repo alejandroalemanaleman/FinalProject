@@ -6,15 +6,15 @@ public class WeatherInfo {
 
     private double temperature;
     private double precipitation;
-    private double humidity;
-    private double clouds;
+    private int humidity;
+    private int clouds;
     private double windVelocity;
     private Location location;
     private final String dayHourChecked;
     private final String forecastDate;
 
 
-    public WeatherInfo(double temperature, double precipitation, double humidity, double clouds, double windVelocity, Location location, String forecastDate) {
+    public WeatherInfo(double temperature, double precipitation, int humidity, int clouds, double windVelocity, Location location, String forecastDate) {
         this.temperature = temperature;
         this.precipitation = precipitation;
         this.humidity = humidity;
@@ -33,11 +33,11 @@ public class WeatherInfo {
         return precipitation;
     }
 
-    public double getHumidity() {
+    public int getHumidity() {
         return humidity;
     }
 
-    public double getClouds() {
+    public int getClouds() {
         return clouds;
     }
 
