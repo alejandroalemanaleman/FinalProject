@@ -13,7 +13,6 @@ public class SQLiteWeatherStore {
             insert(connection, weatherInfo);
             /*
             update(statement);
-            delete(statement);
              */
             connection.commit();
         } catch (SQLException e) {
@@ -21,9 +20,8 @@ public class SQLiteWeatherStore {
         }
     }
 
-    private static void delete(Statement statement) throws SQLException {
-        statement.execute("DELETE FROM products\n" +
-                "WHERE id=1;");
+    private void delete(Statement statement, WeatherInfo weatherInfo) throws SQLException {
+        statement.execute("DELETE FROM " + weatherInfo.getLocation().getPlace());
     }
 
     private static void createTable(Statement statement, WeatherInfo weatherInfo) throws SQLException {
@@ -62,7 +60,7 @@ public class SQLiteWeatherStore {
         }
     }
 
-    private static void update(Statement statement) throws SQLException {
+    public static void update(Statement statement) throws SQLException {
         statement.execute("UPDATE products\n" +
                 "SET name = 'orbea500' \n" +
                 "WHERE" + " name='orbea';");
