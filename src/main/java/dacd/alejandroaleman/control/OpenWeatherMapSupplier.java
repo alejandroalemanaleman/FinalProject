@@ -57,7 +57,7 @@ public class OpenWeatherMapSupplier implements WeatherSupplier{
             JsonObject forecast = (JsonObject) lista.get(i);
             String substring = String.valueOf(forecast.get("dt_txt")).substring(12, 14);
 
-            if (substring.equals("00")) {
+            if (substring.equals("12")) {
                 forecastListAtTwelve.add(forecast);
             }
             i++;
