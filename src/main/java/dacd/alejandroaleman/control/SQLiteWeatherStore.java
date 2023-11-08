@@ -1,65 +1,52 @@
 package dacd.alejandroaleman.control;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.*;
+import java.util.List;
 
-public class SQLiteWeatherStore {
-    public SQLiteWeatherStore(WeatherInfo weatherInfo) {
-        String dbPath = "jdbc/WeatherDatabase.db"; // Reemplaza con la ubicación de tu base de datos
+public class SQLiteWeatherStore implements WeatherStore{
+    private File fileWithDbPath;
+
+    public SQLiteWeatherStore(File fileWithDbPath) {
+        this.fileWithDbPath = fileWithDbPath;
+    }
+
+    public void save (List<List<Weather>> listOfAllWeather) {
+
+        for (int i = 0; i < listOfAllWeather.size(); i++) {
+            for (int j = 0; j < listOfAllWeather.get(i).size(); j++){
+                saveInstance(listOfAllWeather.get(i).get(j));
+            }
+        }
+    }
+
+    private void saveInstance (Weather weather){
+        String dbPath = getDatabasePath();
         new File(dbPath).getParentFile().mkdirs();
 
         try (Connection connection = connect(dbPath)) {
             connection.setAutoCommit(false);
             Statement statement = connection.createStatement();
-            createTable(statement, weatherInfo);
-            if (dataexists(connection, weatherInfo)){
-                update(connection, weatherInfo);
-                System.out.println(weatherInfo.getLocation().getPlace() + " - Ha sido updated.");
+            createTable(statement, weather);
+            if (dataexists(connection, weather)) {
+                update(connection, weather);
+                System.out.println(weather.getLocation().getPlace() + " - Ha sido updated.");
+            } else {
+                insert(connection, weather);
+                System.out.println(weather.getLocation().getPlace() + " - Ha sido inserted.");
             }
-            else {
-                insert(connection, weatherInfo);
-                System.out.println(weatherInfo.getLocation().getPlace() + " - Ha sido inserted.");
-            }
-
-            /*
-            if (dataCount(connection, weatherInfo.getLocation().getPlace()) >= 5) {
-                // Si hay 5 registros, elimina el registro más antiguo
-                deleteOldestRecord(connection, weatherInfo.getLocation().getPlace());
-            }
-             */
             connection.commit();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void delete(Statement statement, WeatherInfo weatherInfo) throws SQLException {
-        statement.execute("DELETE FROM " + weatherInfo.getLocation().getPlace());
-    }
-// CAMBIOS NUEVOS AQUI
-private int dataCount(Connection connection, String tableName) throws SQLException {
-    String countQuery = "SELECT COUNT(*) FROM " + tableName;
-    try (PreparedStatement preparedStatement = connection.prepareStatement(countQuery);
-         ResultSet resultSet = preparedStatement.executeQuery()) {
-        if (resultSet.next()) {
-            return resultSet.getInt(1);
-        }
-    }
-    return 0;
-}
 
-    private void deleteOldestRecord(Connection connection, String tableName) throws SQLException {
-        String deleteQuery = "DELETE FROM " + tableName + " WHERE id IN (SELECT id FROM " + tableName + " ORDER BY id ASC LIMIT 1)";
-        try (Statement statement = connection.createStatement()) {
-            statement.execute(deleteQuery);
-        }
-    }
-
-    private void deleteAll(Statement statement, String tableName) throws SQLException {
-        statement.execute("DELETE FROM " + tableName);
-    }
-//HASTA AQUI
-    private static void createTable(Statement statement, WeatherInfo weatherInfo) throws SQLException {
-        statement.execute("CREATE TABLE IF NOT EXISTS " + weatherInfo.getLocation().getPlace() + " (" +
+    //HASTA AQUI
+    private static void createTable(Statement statement, Weather weather) throws SQLException {
+        statement.execute("CREATE TABLE IF NOT EXISTS " + weather.getLocation().getPlace() + " (" +
                 "id INTEGER PRIMARY KEY,\n" +
                 "city TEXT NOT NULL,\n" +
                 "hourSaved TEXT NOT NULL,\n" +
@@ -72,20 +59,20 @@ private int dataCount(Connection connection, String tableName) throws SQLExcepti
                 ");");
     }
 
-    private static void insert(Connection connection, WeatherInfo weatherInfo) throws SQLException {
-        String tableName = weatherInfo.getLocation().getPlace();
+    private static void insert(Connection connection, Weather weather) throws SQLException {
+        String tableName = weather.getLocation().getPlace();
         String insertQuery = "INSERT INTO " + tableName + " (city, hourSaved, temperature, precipitation, humidity, clouds, windvelocity, forecastDay) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
-            preparedStatement.setString(1, weatherInfo.getLocation().getCity());
-            preparedStatement.setString(2, weatherInfo.getDayHourChecked());
-            preparedStatement.setDouble(3, weatherInfo.getTemperature());
-            preparedStatement.setDouble(4, weatherInfo.getPrecipitation());
-            preparedStatement.setDouble(5, weatherInfo.getHumidity());
-            preparedStatement.setDouble(6, weatherInfo.getClouds());
-            preparedStatement.setDouble(7, weatherInfo.getWindVelocity());
-            preparedStatement.setString(8, weatherInfo.getForecastDate());
+            preparedStatement.setString(1, weather.getLocation().getCity());
+            preparedStatement.setString(2, weather.getDayHourChecked());
+            preparedStatement.setDouble(3, weather.getTemperature());
+            preparedStatement.setDouble(4, weather.getPrecipitation());
+            preparedStatement.setDouble(5, weather.getHumidity());
+            preparedStatement.setDouble(6, weather.getClouds());
+            preparedStatement.setDouble(7, weather.getWindVelocity());
+            preparedStatement.setString(8, weather.getForecastDate().toString());
 
             preparedStatement.executeUpdate();
             System.out.println("Datos insertados correctamente.");
@@ -94,21 +81,21 @@ private int dataCount(Connection connection, String tableName) throws SQLExcepti
         }
     }
 
-    public static void update(Connection connection, WeatherInfo weatherInfo) throws SQLException {
-        String tableName = weatherInfo.getLocation().getPlace();
+    private static void update(Connection connection, Weather weather) throws SQLException {
+        String tableName = weather.getLocation().getPlace();
         String updateQuery = "UPDATE " + tableName +
                 " SET city = ?, hourSaved = ?, temperature = ?, precipitation = ?, humidity = ?, clouds = ?, windvelocity = ?" +
                 " WHERE forecastDay = ?";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
-            preparedStatement.setString(1, weatherInfo.getLocation().getCity());
-            preparedStatement.setString(2, weatherInfo.getDayHourChecked());
-            preparedStatement.setDouble(3, weatherInfo.getTemperature());
-            preparedStatement.setDouble(4, weatherInfo.getPrecipitation());
-            preparedStatement.setDouble(5, weatherInfo.getHumidity());
-            preparedStatement.setDouble(6, weatherInfo.getClouds());
-            preparedStatement.setDouble(7, weatherInfo.getWindVelocity());
-            preparedStatement.setString(8, weatherInfo.getForecastDate());
+            preparedStatement.setString(1, weather.getLocation().getCity());
+            preparedStatement.setString(2, weather.getDayHourChecked());
+            preparedStatement.setDouble(3, weather.getTemperature());
+            preparedStatement.setDouble(4, weather.getPrecipitation());
+            preparedStatement.setDouble(5, weather.getHumidity());
+            preparedStatement.setDouble(6, weather.getClouds());
+            preparedStatement.setDouble(7, weather.getWindVelocity());
+            preparedStatement.setString(8, weather.getForecastDate().toString());
 
             preparedStatement.executeUpdate();
             System.out.println("Datos actualizados correctamente.");
@@ -118,7 +105,7 @@ private int dataCount(Connection connection, String tableName) throws SQLExcepti
     }
 
 
-    public static Connection connect(String dbPath) {
+    private static Connection connect(String dbPath) {
         Connection conn = null;
         try {
             String url = "jdbc:sqlite:" + dbPath;
@@ -131,9 +118,9 @@ private int dataCount(Connection connection, String tableName) throws SQLExcepti
         return conn;
     }
 
-    public static boolean dataexists(Connection connection, WeatherInfo weatherInfo) {
-        String tableName = weatherInfo.getLocation().getPlace();
-        String forecastDay = weatherInfo.getForecastDate();
+    private static boolean dataexists(Connection connection, Weather weather) {
+        String tableName = weather.getLocation().getPlace();
+        String forecastDay = weather.getForecastDate().toString();
         String query = "SELECT 1 FROM " + tableName + " WHERE forecastDay = ? LIMIT 1";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -147,5 +134,21 @@ private int dataCount(Connection connection, String tableName) throws SQLExcepti
 
         return false; // Si ocurre una excepción, se considera que el dato no existe
     }
+
+    private String getDatabasePath(){
+        StringBuilder content = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new FileReader(this.fileWithDbPath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                content.append(line).append("\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null; // Handle the error as needed
+        }
+        return content.toString();
+    }
+
+
 
 }

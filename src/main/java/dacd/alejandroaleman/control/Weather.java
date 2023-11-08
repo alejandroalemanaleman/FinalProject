@@ -1,8 +1,9 @@
 package dacd.alejandroaleman.control;
 
+import java.time.Instant;
 import java.time.LocalTime;
 
-public class WeatherInfo {
+public class Weather {
 
     private double temperature;
     private double precipitation;
@@ -11,10 +12,11 @@ public class WeatherInfo {
     private double windVelocity;
     private Location location;
     private final String dayHourChecked;
-    private final String forecastDate;
+    private final Instant forecastDate;
+    //hacerlo Instant!
 
 
-    public WeatherInfo(double temperature, double precipitation, int humidity, int clouds, double windVelocity, Location location, String forecastDate) {
+    public Weather(double temperature, double precipitation, int humidity, int clouds, double windVelocity, Location location, Instant forecastDate) {
         this.temperature = temperature;
         this.precipitation = precipitation;
         this.humidity = humidity;
@@ -53,7 +55,7 @@ public class WeatherInfo {
         return dayHourChecked;
     }
 
-    public String getForecastDate() {
+    public Instant getForecastDate() {
         return forecastDate;
     }
 
