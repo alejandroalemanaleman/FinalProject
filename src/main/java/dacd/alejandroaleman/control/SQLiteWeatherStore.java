@@ -6,27 +6,27 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.List;
 
-public class SQLiteWeatherStore implements WeatherStore{
-    private File fileWithDbPath;
+public class SQLiteWeatherStore implements WeatherStore {
+    private String dbPath;
 
-    public SQLiteWeatherStore(File fileWithDbPath) {
-        this.fileWithDbPath = fileWithDbPath;
+    public SQLiteWeatherStore(String dbPath) {
+        this.dbPath = dbPath;
     }
 
-    public void save (List<List<Weather>> listOfAllWeather) {
+    public void save(List<List<Weather>> listOfAllWeather) {
 
         for (int i = 0; i < listOfAllWeather.size(); i++) {
-            for (int j = 0; j < listOfAllWeather.get(i).size(); j++){
+            for (int j = 0; j < listOfAllWeather.get(i).size(); j++) {
                 saveInstance(listOfAllWeather.get(i).get(j));
             }
         }
     }
 
-    private void saveInstance (Weather weather){
-        String dbPath = getDatabasePath();
-        new File(dbPath).getParentFile().mkdirs();
+    private void saveInstance(Weather weather) {
 
-        try (Connection connection = connect(dbPath)) {
+        new File(this.dbPath).getParentFile().mkdirs();
+
+        try (Connection connection = connect(this.dbPath)) {
             connection.setAutoCommit(false);
             Statement statement = connection.createStatement();
             createTable(statement, weather);
@@ -66,7 +66,7 @@ public class SQLiteWeatherStore implements WeatherStore{
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
             preparedStatement.setString(1, weather.getLocation().getCity());
-            preparedStatement.setString(2, weather.getDayHourChecked());
+            preparedStatement.setString(2, weather.getDateChecked().toString());
             preparedStatement.setDouble(3, weather.getTemperature());
             preparedStatement.setDouble(4, weather.getPrecipitation());
             preparedStatement.setDouble(5, weather.getHumidity());
@@ -89,7 +89,7 @@ public class SQLiteWeatherStore implements WeatherStore{
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
             preparedStatement.setString(1, weather.getLocation().getCity());
-            preparedStatement.setString(2, weather.getDayHourChecked());
+            preparedStatement.setString(2, weather.getDateChecked().toString());
             preparedStatement.setDouble(3, weather.getTemperature());
             preparedStatement.setDouble(4, weather.getPrecipitation());
             preparedStatement.setDouble(5, weather.getHumidity());
@@ -134,21 +134,4 @@ public class SQLiteWeatherStore implements WeatherStore{
 
         return false; // Si ocurre una excepción, se considera que el dato no existe
     }
-
-    private String getDatabasePath(){
-        StringBuilder content = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(this.fileWithDbPath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                content.append(line).append("\n");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null; // Handle the error as needed
-        }
-        return content.toString();
-    }
-
-
-
 }

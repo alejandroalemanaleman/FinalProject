@@ -20,10 +20,10 @@ import java.util.List;
 
 
 public class OpenWeatherMapSupplier implements WeatherSupplier{
-    private File fileWithApiKey;
+    private String apiKey;
 
-    public OpenWeatherMapSupplier(File fileWithApiKey) {
-        this.fileWithApiKey = fileWithApiKey;
+    public OpenWeatherMapSupplier(String apiKey) {
+        this.apiKey = apiKey;
     }
 
     public List<List<Weather>> get(List<Location> locationList){
@@ -92,8 +92,8 @@ public class OpenWeatherMapSupplier implements WeatherSupplier{
 
     private JsonObject getWeatherData (Location location) {
         try {
-            String apiKey = "ca65a040d090abca857edca70284755b";
-            String apiUrl = "https://api.openweathermap.org/data/2.5/forecast?lat=" + location.getLat() + "&lon="+ location.getLon() + "&appid=" + apiKey;
+
+            String apiUrl = "https://api.openweathermap.org/data/2.5/forecast?lat=" + location.getLat() + "&lon="+ location.getLon() + "&appid=" + this.apiKey;
 
             // Realiza una solicitud HTTP a la URL
             Document document = Jsoup.connect(apiUrl).ignoreContentType(true).get();
@@ -111,21 +111,6 @@ public class OpenWeatherMapSupplier implements WeatherSupplier{
         }
         return null;
     }
-
-    private String getApiKey(){
-        StringBuilder content = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(this.fileWithApiKey))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                content.append(line).append("\n");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null; // Handle the error as needed
-        }
-        return content.toString();
-    }
-
 
     private Instant getDateAsInstant(String dateTimeString){
         // Cadena de texto en formato "00:00:00"

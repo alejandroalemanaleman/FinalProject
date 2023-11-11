@@ -1,7 +1,7 @@
 package dacd.alejandroaleman.control;
 
-import java.time.Instant;
-import java.time.LocalTime;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 
 public class Weather {
 
@@ -11,7 +11,7 @@ public class Weather {
     private int clouds;
     private double windVelocity;
     private Location location;
-    private final String dayHourChecked;
+    private final Instant dayHourChecked;
     private final Instant forecastDate;
     //hacerlo Instant!
 
@@ -23,7 +23,7 @@ public class Weather {
         this.clouds = clouds;
         this.windVelocity = windVelocity;
         this.location = location;
-        this.dayHourChecked = LocalTime.now().toString().substring(0, 8);
+        this.dayHourChecked = Instant.now();
         this.forecastDate = forecastDate;
     }
 
@@ -51,13 +51,14 @@ public class Weather {
         return location;
     }
 
-    public String getDayHourChecked() {
+    public Instant getDateChecked() {
         return dayHourChecked;
     }
 
     public Instant getForecastDate() {
         return forecastDate;
     }
+
 
     @Override
     public String toString() {
