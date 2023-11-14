@@ -1,19 +1,17 @@
 package dacd.alejandroaleman.control;
 
-import java.time.*;
-import java.time.format.DateTimeFormatter;
+import java.time.Instant;
 
 public class Weather {
 
-    private double temperature;
-    private double precipitation;
-    private int humidity;
-    private int clouds;
-    private double windVelocity;
-    private Location location;
+    private final double temperature;
+    private final double precipitation;
+    private final int humidity;
+    private final int clouds;
+    private final double windVelocity;
+    private final Location location;
     private final Instant dayHourChecked;
     private final Instant forecastDate;
-    //hacerlo Instant!
 
 
     public Weather(double temperature, double precipitation, int humidity, int clouds, double windVelocity, Location location, Instant forecastDate) {
@@ -57,21 +55,6 @@ public class Weather {
 
     public Instant getForecastDate() {
         return forecastDate;
-    }
-
-
-    @Override
-    public String toString() {
-        return "WeatherInfo{" +
-                "temperature=" + temperature +
-                ", precipitation=" + precipitation +
-                ", humidity=" + humidity +
-                ", clouds=" + clouds +
-                ", windVelocity=" + windVelocity +
-                ", location=" + location +
-                ", forecastDay='" + forecastDate + '\'' +
-                ", dayHourChecked='" + dayHourChecked + '\'' +
-                '}';
     }
 
 }

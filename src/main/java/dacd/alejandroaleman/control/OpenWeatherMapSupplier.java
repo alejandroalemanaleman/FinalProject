@@ -6,21 +6,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
-
 public class OpenWeatherMapSupplier implements WeatherSupplier{
-    private String apiKey;
+    private final String apiKey;
 
     public OpenWeatherMapSupplier(String apiKey) {
         this.apiKey = apiKey;
@@ -30,27 +22,23 @@ public class OpenWeatherMapSupplier implements WeatherSupplier{
         List<List<Weather>> listOfAllWeather = new ArrayList<>();
 
         for (int i = 0; i < locationList.size(); i++){
-            JsonObject weatherData = getWeatherData(locationList.get(i));
-            List<Weather> weather = getWeatherInfo(weatherData, locationList.get(i));
+            JsonObject weatherData = getOpenWeatherData(locationList.get(i));
+            List<Weather> weather = getWeather(weatherData, locationList.get(i));
             listOfAllWeather.add(weather);
         }
         return listOfAllWeather;
     }
 
-    private List<Weather> getWeatherInfo(JsonObject weatherData, Location location){
+    private List<Weather> getWeather(JsonObject weatherData, Location location){
         List<Weather> weatherList = new ArrayList<>();
-        location.setCity(String.valueOf(weatherData.getAsJsonObject("city").get("name")));
+
+        location.setCity(weatherData.getAsJsonObject("city").get("name").toString().replace("\"", ""));
         JsonArray forecastList = weatherData.getAsJsonArray("list");
         List<JsonObject> forecastAtTwelve = getForecast(forecastList);
 
         int i = 0;
         while (i < forecastAtTwelve.size()) {
-            //System.out.println(forecastList);
-
-            // TODO implementar bucle que encuentre primera previsión que sea a las 12:00.
-            // y hacer uso de las interfaces.
             JsonObject forecastObject = forecastAtTwelve.get(i);
-
 
             JsonObject objectMain = forecastObject.getAsJsonObject("main");
             JsonObject objectClouds = forecastObject.getAsJsonObject("clouds");
@@ -62,26 +50,22 @@ public class OpenWeatherMapSupplier implements WeatherSupplier{
             int clouds = objectClouds.get("all").getAsInt();
             double windVelocity = windObject.get("speed").getAsDouble();
             JsonElement date = forecastObject.get("dt_txt");
-            System.out.println(date + " DATE AS STRING");
             Instant dateAsInstant = getDateAsInstant(date.getAsString());
-            System.out.println(dateAsInstant);
+
             Weather weather = new Weather(temperature, precipitation, humidity, clouds, windVelocity, location, dateAsInstant);
-            System.out.println(forecastObject);
-            System.out.println(forecastObject.get("dt_txt"));
             weatherList.add(weather);
             i ++;
         }
         return weatherList;
     }
 
-    private List<JsonObject> getForecast(JsonArray lista){
+    private List<JsonObject> getForecast(JsonArray forecastList){
         List<JsonObject> forecastListAtTwelve = new ArrayList<>();
 
         int i = 0;
-        while(i < lista.size()) {
-            JsonObject forecast = (JsonObject) lista.get(i);
+        while(i < forecastList.size()) {
+            JsonObject forecast = (JsonObject) forecastList.get(i);
             String substring = String.valueOf(forecast.get("dt_txt")).substring(12, 14);
-
             if (substring.equals("12")) {
                 forecastListAtTwelve.add(forecast);
             }
@@ -90,19 +74,14 @@ public class OpenWeatherMapSupplier implements WeatherSupplier{
         return forecastListAtTwelve;
     }
 
-    private JsonObject getWeatherData (Location location) {
+    private JsonObject getOpenWeatherData (Location location) {
         try {
-
             String apiUrl = "https://api.openweathermap.org/data/2.5/forecast?lat=" + location.getLat() + "&lon="+ location.getLon() + "&appid=" + this.apiKey;
 
-            // Realiza una solicitud HTTP a la URL
             Document document = Jsoup.connect(apiUrl).ignoreContentType(true).get();
-
-            // Obtiene el contenido JSON de la respuesta
             String jsonResponse = document.text();
 
             Gson gson = new Gson();
-            //WeatherData weatherData = gson.fromJson(jsonText, WeatherData.class);
             return gson.fromJson(jsonResponse, JsonObject.class);
 
         } catch (Exception e) {
@@ -113,10 +92,8 @@ public class OpenWeatherMapSupplier implements WeatherSupplier{
     }
 
     private Instant getDateAsInstant(String dateTimeString){
-        // Cadena de texto en formato "00:00:00"
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime localDateTime = LocalDateTime.parse(dateTimeString, formatter);
         return localDateTime.toInstant(ZoneOffset.UTC);
     }
-
 }

@@ -1,13 +1,11 @@
 package dacd.alejandroaleman.control;
-import java.io.BufferedReader;
+
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.sql.*;
 import java.util.List;
 
 public class SQLiteWeatherStore implements WeatherStore {
-    private String dbPath;
+    private final String dbPath;
 
     public SQLiteWeatherStore(String dbPath) {
         this.dbPath = dbPath;
@@ -30,12 +28,10 @@ public class SQLiteWeatherStore implements WeatherStore {
             connection.setAutoCommit(false);
             Statement statement = connection.createStatement();
             createTable(statement, weather);
-            if (dataexists(connection, weather)) {
+            if (dataExists(connection, weather)) {
                 update(connection, weather);
-                System.out.println(weather.getLocation().getPlace() + " - Ha sido updated.");
             } else {
                 insert(connection, weather);
-                System.out.println(weather.getLocation().getPlace() + " - Ha sido inserted.");
             }
             connection.commit();
         } catch (SQLException e) {
@@ -44,9 +40,8 @@ public class SQLiteWeatherStore implements WeatherStore {
     }
 
 
-    //HASTA AQUI
     private static void createTable(Statement statement, Weather weather) throws SQLException {
-        statement.execute("CREATE TABLE IF NOT EXISTS " + weather.getLocation().getPlace() + " (" +
+        statement.execute("CREATE TABLE IF NOT EXISTS " + weather.getLocation().getIsland() + " (" +
                 "id INTEGER PRIMARY KEY,\n" +
                 "city TEXT NOT NULL,\n" +
                 "hourSaved TEXT NOT NULL,\n" +
@@ -60,7 +55,7 @@ public class SQLiteWeatherStore implements WeatherStore {
     }
 
     private static void insert(Connection connection, Weather weather) throws SQLException {
-        String tableName = weather.getLocation().getPlace();
+        String tableName = weather.getLocation().getIsland();
         String insertQuery = "INSERT INTO " + tableName + " (city, hourSaved, temperature, precipitation, humidity, clouds, windvelocity, forecastDay) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -75,14 +70,14 @@ public class SQLiteWeatherStore implements WeatherStore {
             preparedStatement.setString(8, weather.getForecastDate().toString());
 
             preparedStatement.executeUpdate();
-            System.out.println("Datos insertados correctamente.");
+            System.out.println("Data from " + weather.getLocation().getIsland() +" stored correctly at: " + weather.getDateChecked());
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     private static void update(Connection connection, Weather weather) throws SQLException {
-        String tableName = weather.getLocation().getPlace();
+        String tableName = weather.getLocation().getIsland();
         String updateQuery = "UPDATE " + tableName +
                 " SET city = ?, hourSaved = ?, temperature = ?, precipitation = ?, humidity = ?, clouds = ?, windvelocity = ?" +
                 " WHERE forecastDay = ?";
@@ -98,7 +93,7 @@ public class SQLiteWeatherStore implements WeatherStore {
             preparedStatement.setString(8, weather.getForecastDate().toString());
 
             preparedStatement.executeUpdate();
-            System.out.println("Datos actualizados correctamente.");
+            System.out.println("Data from " + weather.getLocation().getIsland() +" updated correctly at: " + weather.getDateChecked());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -118,20 +113,19 @@ public class SQLiteWeatherStore implements WeatherStore {
         return conn;
     }
 
-    private static boolean dataexists(Connection connection, Weather weather) {
-        String tableName = weather.getLocation().getPlace();
+    private static boolean dataExists(Connection connection, Weather weather) {
+        String tableName = weather.getLocation().getIsland();
         String forecastDay = weather.getForecastDate().toString();
         String query = "SELECT 1 FROM " + tableName + " WHERE forecastDay = ? LIMIT 1";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, forecastDay);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                return resultSet.next(); // Si hay al menos un resultado, el dato existe
+                return resultSet.next();
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        return false; // Si ocurre una excepción, se considera que el dato no existe
+        return false;
     }
 }

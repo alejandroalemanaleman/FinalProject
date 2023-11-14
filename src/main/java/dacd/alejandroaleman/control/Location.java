@@ -1,36 +1,35 @@
 package dacd.alejandroaleman.control;
 
 public class Location {
-    //GranCanaria, Lanzarote, Fuerteventura, LaGraciosa, Tenerife, LaPalma, LaGomera, ElHierro
-    private String place;
+    private final String island;
     private String city;
-    private double lat;
-    private double lon;
+    private final String lat;
+    private final String lon;
 
 
-    public Location(String place, double lat, double lon) {
-        this.place = place;
+    public Location(String place, String lat, String lon) {
+        this.island = place;
         this.lat = lat;
         this.lon = lon;
     }
 
-    public String getPlace() {
-        return place;
+    public String getIsland() {
+        return island;
     }
 
-    public double getLat() {
+    public String getLat() {
         return lat;
     }
-
-    public double getLon() {
+    public String getLon() {
         return lon;
+    }
+
+    public String getCity() {
+        return city;
     }
 
     public void setCity(String city) {
         this.city = city;
     }
 
-    public String getCity() {
-        return city;
-    }
 }
