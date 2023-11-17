@@ -1,4 +1,4 @@
-package dacd.alejandroaleman.control;
+package dacd.alejandroaleman.model;
 
 public class Location {
     private final String island;

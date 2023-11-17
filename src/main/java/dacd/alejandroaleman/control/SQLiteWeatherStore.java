@@ -1,5 +1,8 @@
 package dacd.alejandroaleman.control;
 
+import dacd.alejandroaleman.model.Weather;
+import dacd.alejandroaleman.model.WeatherStore;
+
 import java.io.File;
 import java.sql.*;
 import java.util.List;

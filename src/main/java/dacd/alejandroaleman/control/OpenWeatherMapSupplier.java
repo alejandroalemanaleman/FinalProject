@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dacd.alejandroaleman.model.*;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import java.time.*;
@@ -11,7 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OpenWeatherMapSupplier implements WeatherSupplier{
+public class OpenWeatherMapSupplier implements WeatherSupplier {
     private final String apiKey;
 
     public OpenWeatherMapSupplier(String apiKey) {

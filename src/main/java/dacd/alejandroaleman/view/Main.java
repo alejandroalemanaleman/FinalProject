@@ -1,4 +1,8 @@
-package dacd.alejandroaleman.control;
+package dacd.alejandroaleman.view;
+
+import dacd.alejandroaleman.control.OpenWeatherMapSupplier;
+import dacd.alejandroaleman.control.SQLiteWeatherStore;
+import dacd.alejandroaleman.control.WeatherController;
 
 import java.util.Timer;
 
@@ -10,6 +14,5 @@ public class Main {
 
         WeatherController weatherController = new WeatherController(new OpenWeatherMapSupplier(args[0]), new SQLiteWeatherStore(args[1]));
         timer.schedule(weatherController, delay, interval);
-
     }
 }

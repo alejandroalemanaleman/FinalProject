@@ -1,5 +1,8 @@
 package dacd.alejandroaleman.control;
 
+import dacd.alejandroaleman.model.Location;
+import dacd.alejandroaleman.model.Weather;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimerTask;
