@@ -21,7 +21,7 @@ Link to OpenWeatherMap API: https://openweathermap.org/forecast5
 
 ## Summary of Functionality
 
-The program is designed to periodically fetch weather data for eight different islands in the Canary Islands archipelago. It utilizes the OpenWeatherMap API to retrieve meteorological information, including temperature, precipitation probability, humidity, cloud coverage, and wind speed. The data is obtained and updated in the database every six hours, focusing on the weather forecast for the next five days at 12 p.m. each day.
+The program is designed to periodically fetch weather data for eight different islands in the Canary Islands archipelago for the 5 next days. It utilizes the OpenWeatherMap API to retrieve meteorological information, including temperature, precipitation probability, humidity, cloud coverage, and wind speed. The data is obtained and updated in the database every six hours, focusing on the weather forecast for the next five days at 12 p.m. each day.
 
 
 
