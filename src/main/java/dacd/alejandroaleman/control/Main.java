@@ -1,8 +1,4 @@
-package dacd.alejandroaleman.view;
-
-import dacd.alejandroaleman.control.OpenWeatherMapSupplier;
-import dacd.alejandroaleman.control.SQLiteWeatherStore;
-import dacd.alejandroaleman.control.WeatherController;
+package dacd.alejandroaleman.control;
 
 import java.util.Timer;
 
