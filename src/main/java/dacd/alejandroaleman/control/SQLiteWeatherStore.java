@@ -12,6 +12,7 @@ public class SQLiteWeatherStore implements WeatherStore {
 
     public SQLiteWeatherStore(String dbPath) {
         this.dbPath = dbPath;
+        new File(this.dbPath).getParentFile().mkdirs();
     }
 
     public void save(List<List<Weather>> listOfAllWeather) {
@@ -24,9 +25,6 @@ public class SQLiteWeatherStore implements WeatherStore {
     }
 
     private void saveInstance(Weather weather) {
-
-        new File(this.dbPath).getParentFile().mkdirs();
-
         try (Connection connection = connect(this.dbPath)) {
             connection.setAutoCommit(false);
             Statement statement = connection.createStatement();
@@ -41,7 +39,6 @@ public class SQLiteWeatherStore implements WeatherStore {
             throw new RuntimeException(e);
         }
     }
-
 
     private static void createTable(Statement statement, Weather weather) throws SQLException {
         statement.execute("CREATE TABLE IF NOT EXISTS " + weather.getLocation().getIsland() + " (" +
@@ -101,7 +98,6 @@ public class SQLiteWeatherStore implements WeatherStore {
             e.printStackTrace();
         }
     }
-
 
     private static Connection connect(String dbPath) {
         Connection conn = null;
