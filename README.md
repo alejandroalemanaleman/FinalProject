@@ -11,7 +11,7 @@
 **University:** University of Las Palmas de Gran Canaria
 
 ## Instructions before running the program
-After downloading the project from the Git repository, to execute the program, you need to provide two variables as command-line arguments in the Main class. The first argument in the args array should be the API key for the OpenWeather "Call 5 day / 3 hour forecast data" API. The second argument in the array should be the path where the database will be stored, along with the desired name for the database. The path must have this format: "\<nameoffolder>/\<databasename>.db". Once these arguments have been specified and stored in the args String array, you can run the program.
+After downloading the project from the Git repository, to execute the program, you need to provide two variables as command-line arguments in the Main class. The first argument in the args array should be the API key for the OpenWeather "Call 5 day / 3 hour forecast data" API. The second argument in the array should be the path where the database will be stored, along with the desired name for the database. The path must have this format: "{nameoffolder}/{databasename}.db". Once these arguments have been specified and stored in the args String array, you can run the program.
 
 <img width="400" alt="First Step" src="https://github.com/alejandroalemanaleman/Memoria/assets/145342887/ac2456f1-1ddf-43cf-95fd-460d8e3684b4">
 <img width="480" alt="Second Step" src="https://github.com/alejandroalemanaleman/Memoria/assets/145342887/8678f81d-9ab7-4534-ad1e-d9989ef13331">
