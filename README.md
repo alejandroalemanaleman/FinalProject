@@ -48,9 +48,6 @@ The following design patterns and principles have been applied:
 
 **Open/Closed Principle (OCP):** Classes should be designed to be extended without modifying their original source code. For example, new locations (`Location`) or weather providers (`WeatherSupplier`) can be added without changing existing classes.
 
-**Dependency Inversion Principle (DIP):**
-High-level modules do not depend on low-level modules. Both depend on abstractions. The WeatherController class takes a WeatherSupplier and a WeatherStore as constructor parameters. These parameters are abstractions (interfaces) rather than concrete classes. This promotes flexibility because you can provide different implementations of the WeatherSupplier and WeatherStore interfaces without modifying the WeatherController class.
-
 **Observer Pattern:**
 The use of Timer and TimerTask in the Main class indicates a form of periodic observation or event scheduling. The WeatherController extends TimerTask, and its run method is periodically executed, triggering weather-related tasks.
 
