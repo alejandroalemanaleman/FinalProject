@@ -4,25 +4,27 @@ import java.time.Instant;
 
 public class Weather {
 
+    private final Instant ts;
+    private final String ss;
+    private final Instant predictionTime;
+    private final Location location;
     private final double temperature;
     private final double precipitation;
     private final int humidity;
     private final int clouds;
     private final double windVelocity;
-    private final Location location;
-    private final Instant dayHourChecked;
-    private final Instant forecastDate;
 
 
     public Weather(double temperature, double precipitation, int humidity, int clouds, double windVelocity, Location location, Instant forecastDate) {
+        this.ts = Instant.now();
+        this.ss = "WeatherSupplier";
+        this.predictionTime = forecastDate;
+        this.location = location;
         this.temperature = temperature;
         this.precipitation = precipitation;
         this.humidity = humidity;
         this.clouds = clouds;
         this.windVelocity = windVelocity;
-        this.location = location;
-        this.dayHourChecked = Instant.now();
-        this.forecastDate = forecastDate;
     }
 
     public double getTemperature() {
@@ -49,13 +51,16 @@ public class Weather {
         return location;
     }
 
-    public Instant getDateChecked() {
-        return dayHourChecked;
+    public Instant getTs() {
+        return ts;
     }
 
-    public Instant getForecastDate() {
-        return forecastDate;
+    public String getSs() {
+        return ss;
     }
 
+    public Instant getPredictionTime() {
+        return predictionTime;
+    }
 }
 

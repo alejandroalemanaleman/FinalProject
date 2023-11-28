@@ -19,32 +19,28 @@ public class OpenWeatherMapSupplier implements WeatherSupplier {
         this.apiKey = apiKey;
     }
 
-    public List<List<Weather>> get(List<Location> locationList){
-        List<List<Weather>> listOfAllWeather = new ArrayList<>();
-
-        for (int i = 0; i < locationList.size(); i++){
-            JsonObject weatherData = getOpenWeatherData(locationList.get(i));
-            List<Weather> weather = getWeather(weatherData, locationList.get(i));
-            listOfAllWeather.add(weather);
-        }
-        return listOfAllWeather;
+    public List<Weather> get(Location location){
+            JsonObject weatherData = getOpenWeatherData(location);
+            List<Weather> weather = getWeather(weatherData, location);
+            return weather;
     }
 
-    private List<Weather> getWeather(JsonObject weatherData, Location location){
-        List<Weather> weatherList = new ArrayList<>();
-
+    private List<Weather> getWeather(JsonObject weatherData, Location location) {
         location.setCity(weatherData.getAsJsonObject("city").get("name").toString().replace("\"", ""));
         JsonArray forecastList = weatherData.getAsJsonArray("list");
-        List<JsonObject> forecastAtTwelve = getForecast(forecastList);
+        List<JsonObject> openWeatherForecastsAtTwelve = getForecasts(forecastList);
+        List<Weather> weathers = convertToWeather(openWeatherForecastsAtTwelve, location);
+        return weathers;
+    }
 
+    private List<Weather> convertToWeather(List<JsonObject> jsonObjects, Location location){
+        List<Weather> weatherList = new ArrayList<>();
         int i = 0;
-        while (i < forecastAtTwelve.size()) {
-            JsonObject forecastObject = forecastAtTwelve.get(i);
-
+        while (i < jsonObjects.size()) {
+            JsonObject forecastObject = jsonObjects.get(i);
             JsonObject objectMain = forecastObject.getAsJsonObject("main");
             JsonObject objectClouds = forecastObject.getAsJsonObject("clouds");
             JsonObject windObject = forecastObject.getAsJsonObject("wind");
-
             double temperature = objectMain.get("temp").getAsDouble();
             double precipitation = forecastObject.get("pop").getAsDouble();
             int humidity = objectMain.get("humidity").getAsInt();
@@ -52,7 +48,6 @@ public class OpenWeatherMapSupplier implements WeatherSupplier {
             double windVelocity = windObject.get("speed").getAsDouble();
             JsonElement date = forecastObject.get("dt_txt");
             Instant dateAsInstant = getDateAsInstant(date.getAsString());
-
             Weather weather = new Weather(temperature, precipitation, humidity, clouds, windVelocity, location, dateAsInstant);
             weatherList.add(weather);
             i ++;
@@ -60,9 +55,8 @@ public class OpenWeatherMapSupplier implements WeatherSupplier {
         return weatherList;
     }
 
-    private List<JsonObject> getForecast(JsonArray forecastList){
+    private List<JsonObject> getForecasts(JsonArray forecastList){
         List<JsonObject> forecastListAtTwelve = new ArrayList<>();
-
         int i = 0;
         while(i < forecastList.size()) {
             JsonObject forecast = (JsonObject) forecastList.get(i);
@@ -77,11 +71,10 @@ public class OpenWeatherMapSupplier implements WeatherSupplier {
 
     private JsonObject getOpenWeatherData (Location location) {
         try {
-            String apiUrl = "https://api.openweathermap.org/data/2.5/forecast?lat=" + location.getLat() + "&lon="+ location.getLon() + "&appid=" + this.apiKey;
-
+            String apiUrl = "https://api.openweathermap.org/data/2.5/forecast?lat=" + location.getLat() + "&lon="+ location.getLon() + "&appid=" + this.apiKey
+                    + "&units=metric";
             Document document = Jsoup.connect(apiUrl).ignoreContentType(true).get();
             String jsonResponse = document.text();
-
             Gson gson = new Gson();
             return gson.fromJson(jsonResponse, JsonObject.class);
 
