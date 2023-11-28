@@ -13,19 +13,28 @@ public class JMSWeatherStore implements WeatherStore{
 
     public void save(List<Weather> weathers) throws JMSException {
         String url = "tcp://localhost:61616";
-        String subject = "prueba1";
         ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(url);
         Connection connection = connectionFactory.createConnection();
         connection.start();
         for (Weather weather : weathers) {
-            String event = getAsJson(weather);
             Session session = connection.createSession(false,
                     Session.AUTO_ACKNOWLEDGE);
+
+            //Destination represents here our queue 'JCG_QUEUE' on the JMS server.
+            //The queue will be created automatically on the server.
+            String subject = "TESTING_NOW";
             Destination destination = session.createQueue(subject);
+
+            // MessageProducer is used for sending messages to the queue.
             MessageProducer producer = session.createProducer(destination);
+
+            // We will send a small text message saying 'Hello World!!!'
             TextMessage message = session
-                    .createTextMessage(event);
+                    .createTextMessage(getAsJson(weather));
+
+            // Here we are sending our message!
             producer.send(message);
+
             System.out.println("JCG printing@@ '" + message.getText() + "'");
         }
         connection.close();
@@ -38,7 +47,7 @@ public class JMSWeatherStore implements WeatherStore{
         return gson.toJson(weather);
     }
 
-    public class InstantSerializer implements JsonSerializer<Instant> {
+    private static class InstantSerializer implements JsonSerializer<Instant> {
         @Override
         public JsonElement serialize(Instant instant, Type type, JsonSerializationContext jsonSerializationContext) {
             return new JsonPrimitive(instant.toString());

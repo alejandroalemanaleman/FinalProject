@@ -26,7 +26,6 @@ public class OpenWeatherMapSupplier implements WeatherSupplier {
     }
 
     private List<Weather> getWeather(JsonObject weatherData, Location location) {
-        location.setCity(weatherData.getAsJsonObject("city").get("name").toString().replace("\"", ""));
         JsonArray forecastList = weatherData.getAsJsonArray("list");
         List<JsonObject> openWeatherForecastsAtTwelve = getForecasts(forecastList);
         List<Weather> weathers = convertToWeather(openWeatherForecastsAtTwelve, location);

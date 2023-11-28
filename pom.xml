@@ -9,7 +9,7 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>weather-provider</module>
+        <module>prediction-provider</module>
         <module>event-store-builder</module>
     </modules>
 
