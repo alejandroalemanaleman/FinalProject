@@ -1,6 +1,7 @@
 package dacd.alejandroaleman.control;
 
 import com.google.gson.*;
+import dacd.alejandroaleman.exceptions.StoreException;
 import dacd.alejandroaleman.model.Weather;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
@@ -11,7 +12,8 @@ import java.util.List;
 
 public class JMSWeatherStore implements WeatherStore{
 
-    public void save(List<Weather> weathers) throws JMSException {
+    public void save(List<Weather> weathers) throws StoreException {
+        try{
         String url = "tcp://localhost:61616";
         ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(url);
         Connection connection = connectionFactory.createConnection();
@@ -19,25 +21,19 @@ public class JMSWeatherStore implements WeatherStore{
         for (Weather weather : weathers) {
             Session session = connection.createSession(false,
                     Session.AUTO_ACKNOWLEDGE);
-
-            //Destination represents here our queue 'JCG_QUEUE' on the JMS server.
-            //The queue will be created automatically on the server.
-            String subject = "TESTING_NOW";
-            Destination destination = session.createQueue(subject);
-
-            // MessageProducer is used for sending messages to the queue.
+            String subject = "prueba.Weather2";
+            Destination destination = session.createTopic(subject);
             MessageProducer producer = session.createProducer(destination);
-
-            // We will send a small text message saying 'Hello World!!!'
             TextMessage message = session
                     .createTextMessage(getAsJson(weather));
-
-            // Here we are sending our message!
             producer.send(message);
 
             System.out.println("JCG printing@@ '" + message.getText() + "'");
         }
-        connection.close();
+        connection.close();}
+        catch (JMSException e){
+            throw new StoreException(e.getMessage());
+        }
     }
 
      private String getAsJson(Weather weather){

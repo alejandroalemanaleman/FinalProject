@@ -1,4 +1,4 @@
-package org.control;
+package dacd.alejandroaleman.control;
 
 import javax.jms.JMSException;
 
