@@ -15,6 +15,13 @@ public class EventReceiver {
     private final String brokerUrl = "tcp://localhost:61616";
     private final String topicName = "prueba.Weather2";
 
+    private final String userPath;
+
+    public EventReceiver(String userPath) {
+        this.userPath = userPath;
+    }
+
+
     public void receive() throws JMSException {
         ConnectionFactory connFactory = new ActiveMQConnectionFactory(brokerUrl);
         Connection connection = connFactory.createConnection();
@@ -41,7 +48,8 @@ public class EventReceiver {
         JsonObject event = gson.fromJson(jsonString, JsonObject.class);
         String ss = event.get("ss").getAsString();
         String ts = convertDate(event.get("ts").getAsString());
-        String directoryPath = "eventstore/prediction.Weather/" + ss ;
+        System.out.println("ESTE ES EL USER PATH:  " + userPath);
+        String directoryPath = userPath + "/eventstore/prediction.Weather/" + ss ;
         String filePath = directoryPath + "/" + ts + ".events";
         storeEventInFile(directoryPath, filePath, jsonString);
         System.out.println("[Event: ]" + jsonString + "[Stored at:] " + filePath);
