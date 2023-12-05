@@ -1,10 +1,8 @@
 package dacd.alejandroaleman.control;
 
-import com.google.gson.Gson;
 import dacd.alejandroaleman.exceptions.StoreException;
 import dacd.alejandroaleman.model.*;
 
-import javax.jms.JMSException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimerTask;

@@ -12,9 +12,8 @@ import java.time.format.DateTimeFormatter;
 public class EventReceiver {
     //private static String clientId = "clienteDuradero"; // ID de cliente
     //private static String subscriptionName = "suscripcionDuradera"; // Nombre de suscripción duradera
-    private String brokerUrl = "tcp://localhost:61616";
-    private String topicName = "prueba.Weather2";
-    private String eventStoreDirectory = "eventstorePrueba";
+    private final String brokerUrl = "tcp://localhost:61616";
+    private final String topicName = "prueba.Weather2";
 
     public void receive() throws JMSException {
         ConnectionFactory connFactory = new ActiveMQConnectionFactory(brokerUrl);
