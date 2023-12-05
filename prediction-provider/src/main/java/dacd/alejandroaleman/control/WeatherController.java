@@ -1,6 +1,6 @@
 package dacd.alejandroaleman.control;
 
-import dacd.alejandroaleman.exceptions.StoreException;
+import dacd.alejandroaleman.control.exceptions.StoreException;
 import dacd.alejandroaleman.model.*;
 
 import java.util.ArrayList;

@@ -1,7 +1,7 @@
 package dacd.alejandroaleman.control;
 
 import com.google.gson.*;
-import dacd.alejandroaleman.exceptions.StoreException;
+import dacd.alejandroaleman.control.exceptions.StoreException;
 import dacd.alejandroaleman.model.Weather;
 import org.apache.activemq.ActiveMQConnectionFactory;
 

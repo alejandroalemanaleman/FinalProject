@@ -1,4 +1,4 @@
-package dacd.alejandroaleman.exceptions;
+package dacd.alejandroaleman.control.exceptions;
 
 import dacd.alejandroaleman.control.JMSWeatherStore;
 

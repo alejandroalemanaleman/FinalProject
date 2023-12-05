@@ -10,8 +10,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class EventReceiver {
-    //private static String clientId = "clienteDuradero"; // ID de cliente
-    //private static String subscriptionName = "suscripcionDuradera"; // Nombre de suscripción duradera
     private final String brokerUrl = "tcp://localhost:61616";
     private final String topicName = "prueba.Weather2";
 
@@ -25,13 +23,13 @@ public class EventReceiver {
     public void receive() throws JMSException {
         ConnectionFactory connFactory = new ActiveMQConnectionFactory(brokerUrl);
         Connection connection = connFactory.createConnection();
-        connection.setClientID("Ale");
+        connection.setClientID("event-store-builder");
         connection.start();
 
         Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         Topic topic = session.createTopic(topicName);
 
-        MessageConsumer consumer = session.createDurableSubscriber(topic, "Ale");
+        MessageConsumer consumer = session.createDurableSubscriber(topic, "event-store-builder_" + topicName );
         consumer.setMessageListener(message -> {
             try {
                 String text = ((TextMessage) message).getText();
@@ -48,7 +46,6 @@ public class EventReceiver {
         JsonObject event = gson.fromJson(jsonString, JsonObject.class);
         String ss = event.get("ss").getAsString();
         String ts = convertDate(event.get("ts").getAsString());
-        System.out.println("ESTE ES EL USER PATH:  " + userPath);
         String directoryPath = userPath + "/eventstore/prediction.Weather/" + ss ;
         String filePath = directoryPath + "/" + ts + ".events";
         storeEventInFile(directoryPath, filePath, jsonString);
