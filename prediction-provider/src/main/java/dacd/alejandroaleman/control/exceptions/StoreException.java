@@ -1,7 +1,5 @@
 package dacd.alejandroaleman.control.exceptions;
 
-import dacd.alejandroaleman.control.JMSWeatherStore;
-
 import javax.jms.JMSException;
 
 public class StoreException extends JMSException {
