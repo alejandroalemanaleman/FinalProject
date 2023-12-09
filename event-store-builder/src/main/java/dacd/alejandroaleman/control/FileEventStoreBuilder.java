@@ -2,7 +2,6 @@ package dacd.alejandroaleman.control;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import dacd.alejandroaleman.control.exceptions.ReceiverException;
 import dacd.alejandroaleman.control.exceptions.SaveException;
 
 import java.io.BufferedWriter;
@@ -31,6 +30,7 @@ public class FileEventStoreBuilder implements EventStoreBuilder{
             try {
                 storeEventInFile(directoryPath, filePath, message);
                 System.out.println("[Event: ]" + message + "[Stored at:] " + filePath);
+                System.out.println("hey");
             }
             catch (IOException e) {
                 throw new SaveException("Error saving the event", e);

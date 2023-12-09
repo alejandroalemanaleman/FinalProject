@@ -7,25 +7,11 @@ import javax.jms.*;
 
 public class TopicSubscriber implements Subscriber{
     private final EventStoreBuilder fileEventStoreBuilder;
-    private Connection connection = null;
-    private Session session = null;
+    private Connection connection;
+    private Session session;
 
     public TopicSubscriber(EventStoreBuilder fileEventStoreBuilder){
         this.fileEventStoreBuilder = fileEventStoreBuilder;
-        /*
-        String brokerUrl = "tcp://localhost:61616";
-        try {
-            ConnectionFactory connFactory = new ActiveMQConnectionFactory(brokerUrl);
-            this.connection = connFactory.createConnection();
-            connection.setClientID("event-store-builder");
-            connection.start();
-            this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        }
-        catch (JMSException e){
-            throw new ReceiverException(e.getMessage());
-        }
-         */
-
     }
 
     public void start() throws ReceiverException {
@@ -42,7 +28,7 @@ public class TopicSubscriber implements Subscriber{
             try {
                 String text = ((TextMessage) message).getText();
                 fileEventStoreBuilder.save(text);
-                System.out.println("Received message: " + text);
+                System.out.println("[event-store-builder] Received message: " + text);
             } catch (JMSException | SaveException e) {
                 throw new RuntimeException(e);
             }

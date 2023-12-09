@@ -21,15 +21,13 @@ public class OpenWeatherMapSupplier implements WeatherSupplier {
 
     public List<Weather> get(Location location){
             JsonObject weatherData = getOpenWeatherData(location);
-            List<Weather> weather = getWeather(weatherData, location);
-            return weather;
+        return getWeather(weatherData, location);
     }
 
     private List<Weather> getWeather(JsonObject weatherData, Location location) {
         JsonArray forecastList = weatherData.getAsJsonArray("list");
         List<JsonObject> openWeatherForecastsAtTwelve = getForecasts(forecastList);
-        List<Weather> weathers = convertToWeather(openWeatherForecastsAtTwelve, location);
-        return weathers;
+        return convertToWeather(openWeatherForecastsAtTwelve, location);
     }
 
     private List<Weather> convertToWeather(List<JsonObject> jsonObjects, Location location){

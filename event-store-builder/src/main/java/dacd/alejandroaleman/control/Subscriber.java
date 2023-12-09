@@ -1,5 +1,7 @@
 package dacd.alejandroaleman.control;
 
-public interface Subscriber {
+import dacd.alejandroaleman.control.exceptions.ReceiverException;
 
+public interface Subscriber {
+    void start() throws ReceiverException;
 }
