@@ -50,11 +50,11 @@ The use of Timer and TimerTask in the Main class indicates a form of periodic ob
 
 ## Class Diagram
 #### Prediction-provider
-<img width="650" alt="Second Step" src="https://github.com/alejandroalemanaleman/Memoria/assets/145342887/7d7679dc-4bef-4921-aad8-c764d0e5a49c">
+<img width="650" alt="Second Step" src="https://github.com/alejandroalemanaleman/Practice2/assets/145342887/9c61b48d-0593-403d-bc66-60c8105cfcbd">
 
 
 #### Event-store-builder
-<img width="650" alt="Second Step" src="https://github.com/alejandroalemanaleman/Memoria/assets/145342887/bb6cbff1-5198-4990-b074-2019040cceef">
+<img width="650" alt="Second Step" src="https://github.com/alejandroalemanaleman/Practice2/assets/145342887/d7f3ce29-5d4d-4ac8-9236-aa3cead52c9a">
 
 
 ### Dependency Relationships
