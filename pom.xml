@@ -10,7 +10,9 @@
     <packaging>pom</packaging>
     <modules>
         <module>prediction-provider</module>
-        <module>event-store-builder</module>
+        <module>datalake-builder</module>
+        <module>mytrip-business-unit</module>
+        <module>hotel-provider</module>
     </modules>
 
     <properties>

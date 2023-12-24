@@ -9,26 +9,27 @@ public class TopicSubscriber implements Subscriber{
     private final EventStoreBuilder fileEventStoreBuilder;
     private Connection connection;
     private Session session;
+    private final String topicName;
 
-    public TopicSubscriber(EventStoreBuilder fileEventStoreBuilder){
+    public TopicSubscriber(EventStoreBuilder fileEventStoreBuilder, String topicName){
         this.fileEventStoreBuilder = fileEventStoreBuilder;
+        this.topicName = topicName; //TODO
     }
 
     public void start() throws ReceiverException {
         try{
             ConnectionFactory connFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
             connection = connFactory.createConnection();
-            connection.setClientID("event-store-builder");
+            connection.setClientID("datalake-builder");
             connection.start();
             session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            String topicName = "prediction.Weather";
             Topic topic = session.createTopic(topicName);
             MessageConsumer consumer = session.createDurableSubscriber(topic, "event-store-builder_" + topicName);
             consumer.setMessageListener(message -> {
             try {
                 String text = ((TextMessage) message).getText();
                 fileEventStoreBuilder.save(text);
-                System.out.println("[event-store-builder] Received message: " + text);
+                System.out.println("[datalake-builder] Received message: " + text);
             } catch (JMSException | SaveException e) {
                 throw new RuntimeException(e);
             }

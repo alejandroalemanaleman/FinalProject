@@ -25,7 +25,7 @@ public class FileEventStoreBuilder implements EventStoreBuilder{
             JsonObject event = gson.fromJson(message, JsonObject.class);
             String ss = event.get("ss").getAsString();
             String ts = convertDate(event.get("ts").getAsString());
-            String directoryPath = userPath + "/eventstore/prediction.Weather/" + ss;
+            String directoryPath = userPath + "/datalake/eventstore/prediction.Weather/" + ss;
             String filePath = directoryPath + "/" + ts + ".events";
             try {
                 storeEventInFile(directoryPath, filePath, message);
