@@ -2,6 +2,7 @@ package dacd.alejandroaleman.control;
 
 import com.google.gson.*;
 //import dacd.alejandroaleman.control.exceptions.StoreException;
+import dacd.alejandroaleman.model.Hotel;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
 import javax.jms.*;
@@ -9,11 +10,11 @@ import java.lang.reflect.Type;
 import java.time.Instant;
 import java.util.List;
 
-public class JMSHotelStore /*implements WeatherStore*/ {
-    /*
+public class JMSHotelStore implements HotelStore {
+
     private Connection connection;
     private Session session;
-    public void save(List<Weather> weathers) throws StoreException {
+    public void save(List<Hotel> hotels) {
         try {
             ConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
             connection = connectionFactory.createConnection();
@@ -21,12 +22,12 @@ public class JMSHotelStore /*implements WeatherStore*/ {
 
             // Create session outside the loop
             session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            String subject = "prediction.Weather";
+            String subject = "prueba.Hotel";
             Destination destination = session.createTopic(subject);
             MessageProducer producer = session.createProducer(destination);
 
-            for (Weather weather : weathers) {
-                TextMessage message = session.createTextMessage(getAsJson(weather));
+            for (Hotel hotel : hotels) {
+                TextMessage message = session.createTextMessage(getAsJson(hotel));
                 producer.send(message);
                 System.out.println("[prediction-provider] MESSAGE SENT: '" + message.getText() + "' to: " + subject);
             }
@@ -35,15 +36,15 @@ public class JMSHotelStore /*implements WeatherStore*/ {
             session.close();
             connection.close();
         } catch (JMSException e) {
-            throw new StoreException(e.getMessage());
+            //throw new StoreException(e.getMessage());
         }
     }
 
-    private String getAsJson(Weather weather){
+    private String getAsJson(Hotel hotel){
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(Instant.class, new InstantSerializer())
                 .create();
-        return gson.toJson(weather);
+        return gson.toJson(hotel);
     }
 
     private static class InstantSerializer implements JsonSerializer<Instant> {
@@ -53,5 +54,5 @@ public class JMSHotelStore /*implements WeatherStore*/ {
         }
     }
 
-     */
+
 }
