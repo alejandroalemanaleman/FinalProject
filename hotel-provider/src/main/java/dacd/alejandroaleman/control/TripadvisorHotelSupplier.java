@@ -1,16 +1,15 @@
 package dacd.alejandroaleman.control;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import dacd.alejandroaleman.model.Hotel;
-import dacd.alejandroaleman.model.Location;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class TripadvisorHotelSupplier implements HotelSupplier{
     private final String apiKey;
@@ -19,14 +18,65 @@ public class TripadvisorHotelSupplier implements HotelSupplier{
         this.apiKey = apiKey;
     }
 
-    public /*List<Hotel>*/ void get(Location location) {
+    public List<Hotel> get(String place) {
+        List<String> links = getHotelLinks(place);
+        return getHotels(links, place);
+    }
+
+
+    private List<Hotel> getHotels(List<String> links, String place){
+        List<Hotel> hotels = new ArrayList<>();
+        for (String link : links) {
+            Document doc = null;
+            try {
+                doc = Jsoup.connect(link).get();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            finally {
+                String nameHotelSelector = "#HEADING";
+                String priceRangeSelector = "#OVERVIEW_SUBSECTION > div:nth-child(1) > div:nth-child(2)";
+                Element nombreHotelElement = doc.select(nameHotelSelector).first();
+                Element pricerangeElement = doc.select(priceRangeSelector).first();
+                String nameHotel = nombreHotelElement != null ? nombreHotelElement.text() : null;
+                String priceRange = pricerangeElement != null ? pricerangeElement.text() : null;
+                hotels.add(new Hotel(nameHotel, place, priceRange));
+                System.out.println(nameHotel + " " + place);
+            }
+        }
+        return hotels;
+    }
+
+    public List<String> getHotelLinks(String place) {
+        List<String> links = new ArrayList<>();
+        try (InputStream inputStream = Main.class.getClassLoader().getResourceAsStream(place + ".txt")) {
+            if (inputStream != null) {
+                try (Scanner scanner = new Scanner(inputStream, StandardCharsets.UTF_8.name())) {
+                    while (scanner.hasNextLine()) {
+                        links.add(scanner.nextLine());
+                    }
+                }
+            } else {
+                System.err.println("No se pudo encontrar el archivo en el JAR: " + place + ".txt");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return links;
+    }
+
+
+
+
+    /*
+    public List<Hotel> void get(Location location) {
         JsonObject hotelData = getTripAdvisorHotels(location);
         System.out.println(hotelData);
        getHotels(hotelData, location);
        //return getHotels(hotelData, location);
     }
 
-    public /*List<Hotel>*/ void getHotels(JsonObject hotelData, Location location){
+    public List<Hotel> void getHotels(JsonObject hotelData, Location location){
         JsonArray listOfHotelsJSON = hotelData.getAsJsonObject("data").getAsJsonArray("data");
         List<Hotel> hotels = new ArrayList<Hotel>();
         for (int i = 0; i < listOfHotelsJSON.size(); i++) {
@@ -64,4 +114,8 @@ public class TripadvisorHotelSupplier implements HotelSupplier{
         return null;
 
 }
+
+     */
+
+
 }

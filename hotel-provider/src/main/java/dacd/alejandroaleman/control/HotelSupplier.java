@@ -1,7 +1,10 @@
 package dacd.alejandroaleman.control;
 
+import dacd.alejandroaleman.model.Hotel;
 import dacd.alejandroaleman.model.Location;
 
+import java.util.List;
+
 public interface HotelSupplier {
-    void get(Location location);
+    List<Hotel> get(String place);
 }
