@@ -6,5 +6,5 @@ import dacd.alejandroaleman.control.exceptions.SaveException;
 import java.io.IOException;
 
 public interface EventStoreBuilder {
-    void save(String message) throws SaveException;
+    void save(String message, String topic) throws SaveException;
 }

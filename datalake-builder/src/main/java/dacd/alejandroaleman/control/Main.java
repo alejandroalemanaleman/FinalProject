@@ -2,13 +2,23 @@ package dacd.alejandroaleman.control;
 
 import dacd.alejandroaleman.control.exceptions.ReceiverException;
 
-public class Main {
-    public static void main(String[] args) throws ReceiverException {
-        TopicSubscriber predictionWeatherEventReceiver = new TopicSubscriber(new FileEventStoreBuilder(args[0]), "prediction.Weather");
-        predictionWeatherEventReceiver.start();
-        /*TopicSubscriber eventReceiver = new TopicSubscriber(new FileEventStoreBuilder(args[0]), "businessUnitTopic");
-        eventReceiver.start();*/
+import java.util.concurrent.Semaphore;
 
-        //TODO hacer que reciba como args dos topics y en el main se cree dos TopicSubs. y le pases a cada uno un topic(cambiar Topic subs y FileEvent...)
+public class Main {
+    public static void main(String[] args) {
+        // Crear un semáforo con un permiso
+        Semaphore semaphore = new Semaphore(1);
+
+        try {
+            FileEventStoreBuilder builder1 = new FileEventStoreBuilder(args[0]);
+            FileEventStoreBuilder builder2 = new FileEventStoreBuilder(args[0]);
+
+            TopicSubscriber datalakeBuilder = new TopicSubscriber(builder1, "prediction.Weather", "prueba.Hotel", semaphore);
+            datalakeBuilder.start();
+
+            // Iniciar el segundo TopicSubscriber
+        } catch (ReceiverException e) {
+            e.printStackTrace();
+        }
     }
 }

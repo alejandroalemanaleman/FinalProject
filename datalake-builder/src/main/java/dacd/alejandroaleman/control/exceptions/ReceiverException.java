@@ -3,8 +3,8 @@ import javax.jms.JMSException;
 
 public class ReceiverException extends JMSException {
 
-    public ReceiverException(String reason, String errorCode) {
-        super(reason, errorCode);
+    public ReceiverException(String reason, Exception errorCode) {
+        super(reason, String.valueOf(errorCode));
     }
 
     public ReceiverException(String reason) {

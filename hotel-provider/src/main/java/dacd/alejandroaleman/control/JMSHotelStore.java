@@ -20,19 +20,17 @@ public class JMSHotelStore implements HotelStore {
             connection = connectionFactory.createConnection();
             connection.start();
 
-            // Create session outside the loop
             session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            String subject = "prueba.Hotel";
-            Destination destination = session.createTopic(subject);
+            String topic = "prueba.Hotel";
+            Destination destination = session.createTopic(topic);
             MessageProducer producer = session.createProducer(destination);
 
             for (Hotel hotel : hotels) {
                 TextMessage message = session.createTextMessage(getAsJson(hotel));
                 producer.send(message);
-                System.out.println("[prediction-provider] MESSAGE SENT: '" + message.getText() + "' to: " + subject);
+                System.out.println("[hotel-provider] MESSAGE SENT: '" + message.getText() + "' to: " + topic);
             }
 
-            // Close the session after the loop
             session.close();
             connection.close();
         } catch (JMSException e) {
@@ -53,6 +51,4 @@ public class JMSHotelStore implements HotelStore {
             return new JsonPrimitive(instant.toString());
         }
     }
-
-
 }

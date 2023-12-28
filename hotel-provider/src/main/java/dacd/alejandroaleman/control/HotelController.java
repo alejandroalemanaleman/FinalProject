@@ -6,9 +6,11 @@ import java.util.List;
 
 public class HotelController {
     private final HotelSupplier tripadvisorHotelSupplier;
+    private final HotelStore jmsHotelStore;
 
-    public HotelController(HotelSupplier tripadvisorHotelSupplier) {
+    public HotelController(HotelSupplier tripadvisorHotelSupplier, HotelStore jmsHotelStore) {
         this.tripadvisorHotelSupplier = tripadvisorHotelSupplier;
+        this.jmsHotelStore = jmsHotelStore;
     }
 
     public void save(){
@@ -34,9 +36,8 @@ public class HotelController {
         places.add("El-Hierro");
 
         for (String place : places) {
-            //List<Hotel> hotels = tripadvisorHotelSupplier.get(location);
-            tripadvisorHotelSupplier.get(place);
-            //jmsWeatherStore.save(hotels);
+            List<Hotel> hotels = tripadvisorHotelSupplier.get(place);
+            jmsHotelStore.save(hotels);
         }
     }
 

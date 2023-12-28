@@ -20,17 +20,16 @@ public class FileEventStoreBuilder implements EventStoreBuilder{
         this.userPath = userPath;
     }
 
-    public void save(String message) throws SaveException{
+    public void save(String message, String topic) throws SaveException{
             Gson gson = new Gson();
             JsonObject event = gson.fromJson(message, JsonObject.class);
             String ss = event.get("ss").getAsString();
             String ts = convertDate(event.get("ts").getAsString());
-            String directoryPath = userPath + "/datalake/eventstore/prediction.Weather/" + ss;
+            String directoryPath = userPath + "/datalake/eventstore/" + topic + "/" + ss;
             String filePath = directoryPath + "/" + ts + ".events";
             try {
                 storeEventInFile(directoryPath, filePath, message);
                 System.out.println("[Event: ]" + message + "[Stored at:] " + filePath);
-                System.out.println("hey");
             }
             catch (IOException e) {
                 throw new SaveException("Error saving the event", e);
