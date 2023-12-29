@@ -192,19 +192,4 @@ public class SQLiteDatamartStore implements DatamartStore{
             e.printStackTrace();
         }
     }
-
-    /*public static void main(String[] args) {
-        Main dataHandler = new Main("/Users/alejandroalemanaleman/Downloads/basededatosPRUEBA.db");
-
-        // Ruta del archivo con eventos
-        String eventsFilePath = "/Users/alejandroalemanaleman/Downloads/probando/20231228.events";
-
-        // Procesar eventos desde el archivo y agregarlos a la base de datos
-        dataHandler.processEventsFromFile(eventsFilePath);
-
-        // Cerrar la conexión
-        dataHandler.closeConnection();
-    }
-
-     */
 }

@@ -17,13 +17,16 @@ public class Main {
             throw new RuntimeException(e);
         }
         try {
-            Thread.sleep(120000); // 2 minutes in milliseconds
+            Thread.sleep(150000); // 2,5 minutes in milliseconds creo
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        finally {
+            System.out.println("INTERFAZ READY TO SLAY");
 
-        // Now, show the interface or perform any other initialization steps
-        System.out.println("INTERFAZ READY TO SLAY");
+        }
+
+
 
     }
 }
