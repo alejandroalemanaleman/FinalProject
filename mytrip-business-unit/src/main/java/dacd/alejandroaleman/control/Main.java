@@ -10,11 +10,12 @@ public class Main {
 
         try {
             FileEventStoreBuilder builder1 = new FileEventStoreBuilder(args[0]);
-            DatamartController datamartController = new DatamartController(new TopicConsumer(new SQLiteDataStore(args[0]), "prediction.Weather", "prueba.Hotel", semaphore));
-            //datamartController.start();
+            DatamartController datamartController = new DatamartController(new TopicSubscriber(new SQLiteDatamartStore(args[0]), "prediction.Weather", "prueba.Hotel", semaphore));
+            datamartController.excute();
 
         } catch (ReceiverException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
+
     }
 }

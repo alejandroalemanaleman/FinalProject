@@ -1,9 +1,15 @@
 package dacd.alejandroaleman.control;
 
-public class DatamartController {
-    private TopicConsumer topicConsumer;
+import dacd.alejandroaleman.control.exceptions.ReceiverException;
 
-    public DatamartController(TopicConsumer topicConsumer) {
+public class DatamartController {
+    private TopicSubscriber topicConsumer;
+
+    public DatamartController(TopicSubscriber topicConsumer) {
         this.topicConsumer = topicConsumer;
+    }
+
+    public void excute() throws ReceiverException {
+        topicConsumer.start();
     }
 }

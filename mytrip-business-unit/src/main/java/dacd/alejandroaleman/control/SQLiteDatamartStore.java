@@ -3,16 +3,19 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.*;
 
-public class SQLiteDataStore {
+public class SQLiteDatamartStore implements DatamartStore{
 
     private Connection connection;
 
-    public SQLiteDataStore(String dbPath) {
+    public SQLiteDatamartStore(String path) {
         try {
+            String dbPath = path + "datamart/datamart.db";
+            new File(dbPath).getParentFile().mkdirs();
             this.connection = connect(dbPath);
             this.connection.setAutoCommit(false);
         } catch (SQLException e) {
@@ -40,7 +43,7 @@ public class SQLiteDataStore {
                             "prediction_ts TEXT, " +
                             "location_lat TEXT, " +
                             "location_lon TEXT, " +
-                            "location_place TEXT, " +
+                            "place TEXT, " +
                             "temperature REAL, " +
                             "precipitation REAL, " +
                             "humidity INTEGER, " +
@@ -49,21 +52,23 @@ public class SQLiteDataStore {
             );
 
             statement.execute();
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     public void addPredictionData(JsonObject data) {
-        String tableName = "prediction_" + data.getAsJsonObject("location").get("place").getAsString().replaceAll("\\s", "").toLowerCase();
-
+        String tableName = "Prediction_" + data.getAsJsonObject("location").get("place").getAsString().replaceAll("\\s", "")
+                .replaceAll("-","_");
+        System.out.println(tableName);
         createPredictionTable(tableName);
         if (countRowsInTable(tableName) == 5) clearTable(tableName);
 
         try {
             PreparedStatement statement = connection.prepareStatement(
                     "INSERT INTO " + tableName +
-                            "(ts, ss, prediction_ts, location_lat, location_lon, location_place, " +
+                            "(ts, ss, prediction_ts, location_lat, location_lon, place, " +
                             "temperature, precipitation, humidity, clouds, wind_velocity) " +
                             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
             );
@@ -82,40 +87,6 @@ public class SQLiteDataStore {
 
             statement.execute();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void closeConnection() {
-        try {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void processEventsFromFile(String filePath) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                JsonObject jsonObject = JsonParser.parseString(line).getAsJsonObject();
-                String ss = jsonObject.get("ss").getAsString();
-                if ("WeatherSupplier".equals(ss)) {
-                    addPredictionData(jsonObject);
-                } else if ("Hotel-Supplier".equals(ss)) {
-                    addHotelData(jsonObject);
-                }
-            }
-
-            connection.commit(); // Commit the transaction after processing all statements
-        } catch (IOException | SQLException e) {
-            try {
-                connection.rollback(); // Rollback the transaction in case of an exception
-            } catch (SQLException rollbackException) {
-                throw new RuntimeException(rollbackException);
-            }
             throw new RuntimeException(e);
         }
     }
@@ -140,37 +111,61 @@ public class SQLiteDataStore {
     }
 
     private void addHotelData(JsonObject data) {
-        String tableName = "hotels_" + data.getAsJsonObject("location").get("place").getAsString().replaceAll("\\s", "").toLowerCase();
-
+        String tableName = "Hotels_" + data.get("place").getAsString().replaceAll("\\s", "")
+                .replaceAll("-","_");
+        System.out.println(tableName);
         createHotelTable(tableName);
         if (countRowsInTable(tableName) == 5) clearTable(tableName);
 
         try {
             PreparedStatement statement = connection.prepareStatement(
                     "INSERT INTO " + tableName +
-                            "(ts, ss, prediction_ts, location_lat, location_lon, location_place, " +
-                            "temperature, precipitation, humidity, clouds, wind_velocity) " +
-                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                            " (ts, ss, name, place, price) " +
+                            "VALUES (?, ?, ?, ?, ?)"
             );
 
             statement.setString(1, data.get("ts").getAsString());
             statement.setString(2, data.get("ss").getAsString());
-            statement.setString(3, data.get("prediction_ts").getAsString());
-            statement.setString(4, data.getAsJsonObject("location").get("lat").getAsString());
-            statement.setString(5, data.getAsJsonObject("location").get("lon").getAsString());
-            statement.setString(6, data.getAsJsonObject("location").get("place").getAsString());
-            statement.setDouble(7, data.get("temperature").getAsDouble());
-            statement.setDouble(8, data.get("precipitation").getAsDouble());
-            statement.setInt(9, data.get("humidity").getAsInt());
-            statement.setInt(10, data.get("clouds").getAsInt());
-            statement.setDouble(11, data.get("windVelocity").getAsDouble());
+            statement.setString(3, data.get("name").getAsString());
+            statement.setString(4, data.get("place").getAsString());
+            statement.setString(5, data.get("pricePerNight").getAsString());
 
             statement.execute();
+            System.out.println(data);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
+    public void closeConnection() {
+        try {
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void save (String data){
+        try {
+            JsonObject jsonObject = JsonParser.parseString(data).getAsJsonObject();
+            String ss = jsonObject.get("ss").getAsString();
+            if ("WeatherSupplier".equals(ss)) {
+                addPredictionData(jsonObject);
+            } else if ("Hotel-Provider".equals(ss)) {
+                addHotelData(jsonObject);
+            }
+            connection.commit(); // Commit the transaction after processing all statements
+        } catch (SQLException e) {
+            try {
+                connection.rollback(); // Rollback the transaction in case of an exception
+            } catch (SQLException rollbackException) {
+                throw new RuntimeException("Error rolling back transaction", rollbackException);
+            }
+            throw new RuntimeException("Error saving data", e);
+        }
+    }
 
     public int countRowsInTable(String tableName) {
         int rowCount = 0;
