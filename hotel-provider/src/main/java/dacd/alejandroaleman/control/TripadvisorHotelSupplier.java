@@ -24,7 +24,7 @@ public class TripadvisorHotelSupplier implements HotelSupplier{
     }
 
 
-    private List<Hotel> getHotels(List<String> links, String place){
+    private List<Hotel> getHotels(List<String> links, String place) {
         List<Hotel> hotels = new ArrayList<>();
         for (String link : links) {
             Document doc = null;
@@ -32,20 +32,30 @@ public class TripadvisorHotelSupplier implements HotelSupplier{
                 doc = Jsoup.connect(link).get();
             } catch (IOException e) {
                 throw new RuntimeException(e);
-            }
-            finally {
+            } finally {
                 String nameHotelSelector = "#HEADING";
                 String priceRangeSelector = "#OVERVIEW_SUBSECTION > div:nth-child(1) > div:nth-child(2)";
                 Element nombreHotelElement = doc.select(nameHotelSelector).first();
                 Element pricerangeElement = doc.select(priceRangeSelector).first();
-                String nameHotel = nombreHotelElement != null ? nombreHotelElement.text() : null;
-                String priceRange = pricerangeElement != null ? pricerangeElement.text() : null;
+
+                // Obtener el nombre del hotel o establecer como "Not Available" si es nulo
+                String nameHotel = (nombreHotelElement != null) ? nombreHotelElement.text() : "Not Available";
+
+                // Obtener el rango de precios o establecer como "Not Available" si es nulo
+                String priceRangeWithText = (pricerangeElement != null) ? pricerangeElement.text() : "Price not available.";
+                String priceRange = (priceRangeWithText.matches(".*\\d+ € - \\d+ €.*")) ?
+                        priceRangeWithText.replaceAll(".*?(\\d+ € - \\d+ €).*", "$1") : "Not Available";
+
+                // Agregar el hotel a la lista
                 hotels.add(new Hotel(nameHotel, place, priceRange));
+
+                // Imprimir información (opcional)
                 System.out.println(nameHotel + " " + place);
             }
         }
         return hotels;
     }
+
 
     public List<String> getHotelLinks(String place) {
         List<String> links = new ArrayList<>();

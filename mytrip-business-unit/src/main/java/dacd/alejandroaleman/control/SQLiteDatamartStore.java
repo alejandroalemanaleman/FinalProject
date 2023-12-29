@@ -115,7 +115,6 @@ public class SQLiteDatamartStore implements DatamartStore{
                 .replaceAll("-","_");
         System.out.println(tableName);
         createHotelTable(tableName);
-        if (countRowsInTable(tableName) == 5) clearTable(tableName);
 
         try {
             PreparedStatement statement = connection.prepareStatement(

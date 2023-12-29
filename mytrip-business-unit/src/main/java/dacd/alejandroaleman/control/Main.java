@@ -16,6 +16,14 @@ public class Main {
         } catch (ReceiverException e) {
             throw new RuntimeException(e);
         }
+        try {
+            Thread.sleep(120000); // 2 minutes in milliseconds
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Now, show the interface or perform any other initialization steps
+        System.out.println("INTERFAZ READY TO SLAY");
 
     }
 }
