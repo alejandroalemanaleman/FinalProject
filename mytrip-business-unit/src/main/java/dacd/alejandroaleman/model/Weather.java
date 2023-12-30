@@ -54,11 +54,10 @@ public class Weather {
 
     @Override
     public String toString() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String formattedDate = dateFormat.format(Date.from(prediction_ts));
 
-        return "Prediction Time: " + formattedDate +
-                ", Place: " + place +
+        return "Day: " + formattedDate +
                 ", Temperature: " + temperature +
                 ", Precipitation: " + precipitation +
                 ", Humidity: " + humidity +

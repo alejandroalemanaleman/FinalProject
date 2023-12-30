@@ -22,7 +22,6 @@ public class Main {
             e.printStackTrace();
         }
         finally {
-            System.out.println("INTERFAZ READY TO SLAY");
             new GUIInterface().execute();
 
         }

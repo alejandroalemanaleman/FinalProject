@@ -13,4 +13,11 @@ public class Hotel {
         this.place = place;
         this.pricePerNight = pricePerNight;
     }
+
+    @Override
+    public String toString() {
+        return "Hotel: " + name +
+                ", pricePerNight=" + pricePerNight;
+    }
 }
+//RATIING
