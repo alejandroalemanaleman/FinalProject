@@ -1,6 +1,8 @@
 package dacd.alejandroaleman.model;
 
+import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.Date;
 
 public class Weather {
     private final Instant prediction_ts;
@@ -48,5 +50,19 @@ public class Weather {
 
     public double getWindVelocity() {
         return windVelocity;
+    }
+
+    @Override
+    public String toString() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String formattedDate = dateFormat.format(Date.from(prediction_ts));
+
+        return "Prediction Time: " + formattedDate +
+                ", Place: " + place +
+                ", Temperature: " + temperature +
+                ", Precipitation: " + precipitation +
+                ", Humidity: " + humidity +
+                ", Clouds: " + clouds +
+                ", Wind Velocity: " + windVelocity;
     }
 }

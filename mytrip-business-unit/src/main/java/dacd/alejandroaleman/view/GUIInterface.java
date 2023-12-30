@@ -1,18 +1,23 @@
 package dacd.alejandroaleman.view;
 
+import dacd.alejandroaleman.model.Weather;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.net.URL;
+import java.util.List;
+import java.util.Map;
 
 public class GUIInterface {
+
     private JFrame frame;
     private JComboBox<String> dataList;
 
-    public static void main(String[] args) {
+    public void execute() {
         SwingUtilities.invokeLater(() -> {
             GUIInterface guiInterface = new GUIInterface();
             guiInterface.showWaitMessage();
+            guiInterface.showRecommendation(); // Call showRecommendation after showing wait message
         });
     }
 
@@ -27,20 +32,12 @@ public class GUIInterface {
         frame = new JFrame("Data Selection GUI");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Crear una lista desplegable (JComboBox)
         dataList = new JComboBox<>(new String[]{"Option 1", "Option 2", "Option 3"});
         dataList.setFont(new Font("Arial", Font.PLAIN, 14));
 
-        // Botón "Continue"
         JButton continueButton = new JButton("Continue");
-        continueButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                showDataList();
-            }
-        });
+        continueButton.addActionListener(e -> showRecommendation());
 
-        // Panel principal
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.add(dataList);
@@ -48,31 +45,74 @@ public class GUIInterface {
 
         frame.getContentPane().add(mainPanel);
 
-        frame.setSize(900, 600);
-        frame.setLocationRelativeTo(null); // Centrar la ventana en la pantalla
+        // Set the frame to be fullscreen
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frame.setUndecorated(true);  // Removes window decorations (title bar, borders)
+
         frame.setVisible(true);
     }
 
-    private void showDataList() {
-        // Lógica para manejar la selección de datos
-        String selectedData = (String) dataList.getSelectedItem();
-        JOptionPane.showMessageDialog(null, "Selected Data: " + selectedData, "Selection Result",
-                JOptionPane.INFORMATION_MESSAGE);
-
-        // Puedes agregar más lógica según la selección del usuario aquí
-
-        // Cierra la aplicación después de mostrar el resultado
-        System.exit(0);
-    }
-
     private void showRecommendation() {
+        Map<String, List<Weather>> weatherMap = getWeatherMap();
+        String recommendation = new PlaceRecommendationCalculator(weatherMap).calculateRecommendationScore();
 
+        JLabel recommendationLabel = new JLabel("Based on the prediction of the weather for the next five days, it is considered more appropriate to travel to " + recommendation);
+        recommendationLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+
+        JPanel recommendationPanel = new JPanel();
+        recommendationPanel.add(recommendationLabel);
+
+        // Display weather predictions
+        if (weatherMap.containsKey(recommendation)) {
+            List<Weather> weathers = weatherMap.get(recommendation);
+            JScrollPane weatherScrollPane = createWeatherScrollPane(weathers);
+            recommendationPanel.add(weatherScrollPane);
+        }
+
+        ImageIcon imageIcon = new ImageIcon(getImageURL(recommendation));
+        JLabel imageLabel = new JLabel(imageIcon);
+
+        // Create a new panel to hold the recommendation and the image
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BorderLayout());
+        mainPanel.add(recommendationPanel, BorderLayout.CENTER);
+        mainPanel.add(imageLabel, BorderLayout.SOUTH);
+
+        // Update the frame content
+        frame.getContentPane().removeAll(); // Clear existing components
+        frame.getContentPane().add(mainPanel);
+
+        frame.revalidate();
+        frame.repaint();
     }
-    private void showChoosePlace() {
 
+    private Map<String, List<Weather>> getWeatherMap() {
+        DatamartProvider datamartProvider = new DatamartProvider("/Users/alejandroalemanaleman/Downloads/");
+        List<String> places = List.of("La Graciosa", "Lanzarote", "Fuerteventura", "Gran Canaria", "Tenerife", "La Gomera", "La Palma", "El Hierro");
+        return datamartProvider.getPredictionFromPlaces(places);
     }
-    private void showHotelsAvailable() {
 
+    private JScrollPane createWeatherScrollPane(List<Weather> weathers) {
+        JPanel weatherPanel = new JPanel();
+        weatherPanel.setLayout(new GridLayout(weathers.size(), 1));
+
+        for (Weather weather : weathers) {
+            JLabel weatherLabel = new JLabel(weather.toString());
+            weatherPanel.add(weatherLabel);
+        }
+
+        JScrollPane scrollPane = new JScrollPane(weatherPanel);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+        return scrollPane;
     }
 
+    private URL getImageURL(String recommendation) {
+        String imagePath = "/" + recommendation + "_image.jpg";
+        return getClass().getResource(imagePath);
+    }
+
+    public static void main(String[] args) {
+        new GUIInterface().execute();
+    }
 }

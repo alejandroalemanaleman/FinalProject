@@ -1,6 +1,7 @@
 package dacd.alejandroaleman.control;
 
 import dacd.alejandroaleman.control.exceptions.ReceiverException;
+import dacd.alejandroaleman.view.GUIInterface;
 
 import java.util.concurrent.Semaphore;
 
@@ -9,7 +10,6 @@ public class Main {
         Semaphore semaphore = new Semaphore(1);
 
         try {
-            FileEventStoreBuilder builder1 = new FileEventStoreBuilder(args[0]);
             DatamartController datamartController = new DatamartController(new TopicSubscriber(new SQLiteDatamartStore(args[0]), "prediction.Weather", "prueba.Hotel", semaphore));
             datamartController.excute();
 
@@ -17,12 +17,13 @@ public class Main {
             throw new RuntimeException(e);
         }
         try {
-            Thread.sleep(150000); // 2,5 minutes in milliseconds creo
+            Thread.sleep(100000); // 1,8 minutes in milliseconds creo
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         finally {
             System.out.println("INTERFAZ READY TO SLAY");
+            new GUIInterface().execute();
 
         }
 
