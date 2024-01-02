@@ -99,9 +99,9 @@ public class SQLiteDatamartStore implements DatamartStore{
                             "ss TEXT, " +
                             "name TEXT, " +
                             "place TEXT, " +
-                            "price TEXT) " //+
-                    //"rating TEXT, " +
-                    // "wind_velocity REAL)"
+                            "price TEXT, " +
+                            "rating TEXT) " //+
+
             );
 
             statement.execute();
@@ -119,8 +119,8 @@ public class SQLiteDatamartStore implements DatamartStore{
         try {
             PreparedStatement statement = connection.prepareStatement(
                     "INSERT INTO " + tableName +
-                            " (ts, ss, name, place, price) " +
-                            "VALUES (?, ?, ?, ?, ?)"
+                            " (ts, ss, name, place, price, rating) " +
+                            "VALUES (?, ?, ?, ?, ?, ?)"
             );
 
             statement.setString(1, data.get("ts").getAsString());
@@ -128,6 +128,7 @@ public class SQLiteDatamartStore implements DatamartStore{
             statement.setString(3, data.get("name").getAsString());
             statement.setString(4, data.get("place").getAsString());
             statement.setString(5, data.get("pricePerNight").getAsString());
+            statement.setString(6, data.get("rating").getAsString());
 
             statement.execute();
             System.out.println(data);

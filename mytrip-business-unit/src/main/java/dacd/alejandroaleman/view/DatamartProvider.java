@@ -76,8 +76,9 @@ public class DatamartProvider {
                  ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String name = resultSet.getString("name");
-                    String priceRange = resultSet.getString("price");
-                    hotels.add(new Hotel(name, place, priceRange));
+                    String pricePerNight = resultSet.getString("price"); //TODO pricePerNight
+                    String rating = resultSet.getString("rating");
+                    hotels.add(new Hotel(name, place, pricePerNight, rating));
                 }
                 hotelsFromPlaces.put(place, hotels);
             } catch (SQLException e) {

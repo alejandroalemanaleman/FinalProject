@@ -31,26 +31,27 @@ public class TripadvisorHotelSupplier implements HotelSupplier{
             try {
                 doc = Jsoup.connect(link).get();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                System.err.println("Error while connecting to the url: " + link);
+                e.printStackTrace();
             } finally {
-                String nameHotelSelector = "#HEADING";
-                String priceRangeSelector = "#OVERVIEW_SUBSECTION > div:nth-child(1) > div:nth-child(2)";
-                Element nombreHotelElement = doc.select(nameHotelSelector).first();
-                Element pricerangeElement = doc.select(priceRangeSelector).first();
+                if (doc != null) {
+                    String nameHotelSelector = "#HEADING";
+                    String priceRangeSelector = "#OVERVIEW_SUBSECTION > div:nth-child(1) > div:nth-child(2)";
+                    String ratingSelector = "#ABOUT_TAB > div.ui_columns.MXlSZ > div:nth-child(1) > div.grdwI.P > span";
+                    Element nameHotelElement = doc.select(nameHotelSelector).first();
+                    Element priceRangeElement = doc.select(priceRangeSelector).first();
+                    Element ratingElement = doc.select(ratingSelector).first();
 
-                // Obtener el nombre del hotel o establecer como "Not Available" si es nulo
-                String nameHotel = (nombreHotelElement != null) ? nombreHotelElement.text() : "Not Available";
+                    String nameHotel = (nameHotelElement != null) ? nameHotelElement.text() : "Not Available";
+                    String priceRangeWithText = (priceRangeElement != null) ? priceRangeElement.text() : "Price not available.";
+                    String priceRange = (priceRangeWithText.matches(".*\\d+ € - \\d+ €.*")) ?
+                            priceRangeWithText.replaceAll(".*?(\\d+ € - \\d+ €).*", "$1") : "Not Available";
+                    String rating = (ratingElement != null) ? ratingElement.text() : "Not Available";
 
-                // Obtener el rango de precios o establecer como "Not Available" si es nulo
-                String priceRangeWithText = (pricerangeElement != null) ? pricerangeElement.text() : "Price not available.";
-                String priceRange = (priceRangeWithText.matches(".*\\d+ € - \\d+ €.*")) ?
-                        priceRangeWithText.replaceAll(".*?(\\d+ € - \\d+ €).*", "$1") : "Not Available";
-
-                // Agregar el hotel a la lista
-                hotels.add(new Hotel(nameHotel, place, priceRange));
-
-                // Imprimir información (opcional)
-                System.out.println(nameHotel + " " + place);
+                    hotels.add(new Hotel(nameHotel, place, priceRange, rating));
+                    //TODO cambiar el resto de módulos para que se adapten al rating.
+                    System.out.println(nameHotel + ", place:" + place + ", priceRange:" + priceRange + ", rating:" + rating);
+                }
             }
         }
         return hotels;

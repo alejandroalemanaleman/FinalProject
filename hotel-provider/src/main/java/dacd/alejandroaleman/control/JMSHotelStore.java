@@ -21,7 +21,7 @@ public class JMSHotelStore implements HotelStore {
             connection.start();
 
             session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            String topic = "prueba.Hotel";
+            String topic = "prueba.Hotel"; //TODO cambiar el topic a Information.Hotel ??
             Destination destination = session.createTopic(topic);
             MessageProducer producer = session.createProducer(destination);
 

@@ -2,19 +2,18 @@ package dacd.alejandroaleman.view;
 
 import dacd.alejandroaleman.model.Hotel;
 import dacd.alejandroaleman.model.Weather;
-
 import javax.swing.*;
+import javax.swing.event.*;
 import java.awt.*;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 public class GUIInterface {
 
     private JFrame frame;
-    private JComboBox<String> dataList;
+    private JComboBox<String> islandComboBox;
 
     public void execute() {
         SwingUtilities.invokeLater(() -> {
@@ -35,16 +34,15 @@ public class GUIInterface {
         frame = new JFrame("Data Selection GUI");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        dataList = new JComboBox<>(new String[]{"Option 1", "Option 2", "Option 3"});
-        dataList.setFont(new Font("Arial", Font.PLAIN, 14));
-
-        JButton continueButton = new JButton("Continue");
-        continueButton.addActionListener(e -> showRecommendation());
-
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        mainPanel.add(dataList);
-        mainPanel.add(continueButton);
+
+        // Agrega algunos componentes al mainPanel, por ejemplo, un JLabel
+        JLabel label = new JLabel("Hello, this is your application!");
+        label.setFont(new Font("Arial", Font.PLAIN, 20));
+        mainPanel.add(label);
+
+        // También puedes agregar otros componentes según tus necesidades
 
         frame.getContentPane().add(mainPanel);
 
@@ -59,12 +57,17 @@ public class GUIInterface {
         Map<String, List<Weather>> weatherMap = getWeatherMap();
         String recommendation = new PlaceRecommendationCalculator(weatherMap).calculateRecommendationScore();
 
+        System.out.println("Recommendation: " + recommendation);
+
         JLabel recommendationMessage = new JLabel("Based on the prediction of the weather for the next five days, it is considered more appropriate to travel to");
         recommendationMessage.setFont(new Font("Arial", Font.PLAIN, 14));
 
-        JLabel recommendationPlace = new JLabel(recommendation);
-        recommendationPlace.setFont(new Font("Arial", Font.BOLD, 28));
+        // Show the dropdown list before proceeding
+        List<String> islands = Arrays.asList("La Graciosa", "Lanzarote", "Fuerteventura", "Gran Canaria", "Tenerife", "La Gomera", "La Palma", "El Hierro");
+        islandComboBox = new JComboBox<>(islands.toArray(new String[0]));
+        islandComboBox.setSelectedIndex(0); // Select the first island by default
 
+        // Add the dropdown list to the panel
         JPanel recommendationPanel = new JPanel();
         recommendationPanel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -74,8 +77,26 @@ public class GUIInterface {
         recommendationPanel.add(recommendationMessage, gbc);
 
         gbc.gridy = 1;
+        JLabel recommendationPlace = new JLabel(recommendation);
+        recommendationPlace.setFont(new Font("Arial", Font.BOLD, 28));
         recommendationPanel.add(recommendationPlace, gbc);
 
+        gbc.gridy = 2;
+        recommendationPanel.add(islandComboBox, gbc);
+
+        // Button to view weather for the selected island
+        JButton otherWeatherButton = new JButton("View Weather for Other Islands");
+        otherWeatherButton.addActionListener(e -> showWeatherPredictions((String) islandComboBox.getSelectedItem()));
+        gbc.gridy = 3;
+        recommendationPanel.add(otherWeatherButton, gbc);
+
+        // Button to show hotel recommendations for the selected island
+        JButton hotelButton = new JButton("Show Hotel Recommendations");
+        hotelButton.addActionListener(e -> showHotelRecommendations(recommendation));
+        gbc.gridy = 4;
+        recommendationPanel.add(hotelButton, gbc);
+
+        // Panel to display weather information below the recommendation
         JPanel weatherPanel = new JPanel();
         if (weatherMap.containsKey(recommendation)) {
             List<Weather> weathers = weatherMap.get(recommendation);
@@ -104,24 +125,64 @@ public class GUIInterface {
         gbc.gridy = 2;
         mainPanel.add(imageLabel, gbc);
 
-        // Button to show hotel recommendations
-        JButton hotelButton = new JButton("Show Hotel Recommendations");
-        hotelButton.addActionListener(e -> showHotelRecommendations(recommendation));
-        gbc.gridy = 3;
-        mainPanel.add(hotelButton, gbc);
-
         // Update the frame content
-        frame.getContentPane().removeAll(); // Clear existing components
+        frame.getContentPane().removeAll();
         frame.getContentPane().add(mainPanel);
-
         frame.revalidate();
         frame.repaint();
     }
 
-    private void showHotelRecommendations(String recommendation) {
-        Map<String, List<Hotel>> hotelMap = getHotelMap(); // Reemplazar Hotel con tu clase real para la información del hotel
+    private void showWeatherPredictions(String selectedIsland) {
+        Map<String, List<Weather>> weatherMap = getWeatherMap();
 
-        JLabel recommendationMessage = new JLabel("Based on the analysis of available hotels, we recommend staying at");
+        JLabel otherWeatherMessage = new JLabel("Weather Predictions for " + selectedIsland + ":");
+        otherWeatherMessage.setFont(new Font("Arial", Font.PLAIN, 14));
+
+        JPanel otherWeatherPanel = new JPanel();
+        otherWeatherPanel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
+        otherWeatherPanel.add(otherWeatherMessage, gbc);
+
+        gbc.gridy = 1;
+        if (weatherMap.containsKey(selectedIsland)) {
+            List<Weather> weathers = weatherMap.get(selectedIsland);
+            JScrollPane weatherScrollPane = createWeatherScrollPane(weathers);
+            otherWeatherPanel.add(weatherScrollPane, gbc);
+        }
+
+        // Botón para volver a las recomendaciones originales
+        JButton backButton = new JButton("Back to Original Recommendations");
+        backButton.addActionListener(e -> showRecommendation());
+        gbc.gridy++;
+        otherWeatherPanel.add(backButton, gbc);
+
+        // Crear un nuevo panel con GridBagLayout
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new GridBagLayout());
+
+        // Otro panel de clima en el centro
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.insets = new Insets(10, 10, 10, 10); // Añadir un poco de relleno
+        mainPanel.add(otherWeatherPanel, gbc);
+
+        // Actualizar el contenido del marco
+        frame.getContentPane().removeAll();
+        frame.getContentPane().add(mainPanel);
+        frame.revalidate();
+        frame.repaint();
+    } // Método para mostrar predicciones meteorológicas para otras islas
+
+
+    // ...
+
+    private void showHotelRecommendations(String recommendation) {
+        Map<String, List<Hotel>> hotelMap = getHotelMap();
+
+        JLabel recommendationMessage = new JLabel("Based on the analysis, these are the hotels we recommend while staying at");
         recommendationMessage.setFont(new Font("Arial", Font.PLAIN, 14));
 
         JLabel recommendationHotel = new JLabel(recommendation);
@@ -141,11 +202,54 @@ public class GUIInterface {
         // Display hotel information (similar structure to weather predictions)
         JPanel hotelPanel = new JPanel();
 
-        if (hotelMap.containsKey(recommendation)) {
-            List<Hotel> hotels = hotelMap.get(recommendation);
-            JScrollPane hotelScrollPane = createHotelScrollPane(hotels);
-            hotelPanel.add(hotelScrollPane);
-        }
+
+        List<Hotel> hotels = hotelMap.get(recommendation);
+        JScrollPane hotelScrollPane = createHotelScrollPane(hotels);
+        hotelPanel.add(hotelScrollPane);
+
+
+        // Components for reservation
+        JPanel reservationPanel = new JPanel();
+        JLabel selectHotelLabel = new JLabel("Select Hotel:");
+        JComboBox<String> hotelComboBox = new JComboBox<>(hotels.stream()
+                .map(Hotel::getName)
+                .toArray(String[]::new));
+
+        JLabel numberOfPeopleLabel = new JLabel("Select number of guests:");
+        JComboBox<Integer> numberOfPeopleComboBox = new JComboBox<>(new Integer[]{1, 2, 3, 4});
+
+        JLabel numberOfNightsLabel = new JLabel("Select number of nights:");
+        JComboBox<Integer> numberOfNightsField = new JComboBox<>(new Integer[]{1, 2, 3, 4});
+
+        JButton reserveButton = new JButton("Reserve");
+        reserveButton.addActionListener(e -> {
+            OptionalDouble priceOptional = hotels.stream()
+                    .filter(hotel -> hotel.getName().equals(hotelComboBox.getSelectedItem()))
+                    .mapToDouble(Hotel::getMeanPrice)
+                    .findFirst();
+
+            // Verifica si el precio está disponible antes de intentar obtener el valor
+            if (priceOptional.isPresent()) {
+                double price = priceOptional.getAsDouble();
+
+                makeReservation(hotelComboBox.getSelectedItem(), recommendation,
+                        (Integer) numberOfPeopleComboBox.getSelectedItem(),
+                        (Integer) numberOfNightsField.getSelectedItem(),
+                        price);
+            } else {
+                // Manejo si el precio no está disponible
+                System.out.println("Price not available for the selected hotel.");
+            }
+        });
+
+
+        reservationPanel.add(selectHotelLabel);
+        reservationPanel.add(hotelComboBox);
+        reservationPanel.add(numberOfPeopleLabel);
+        reservationPanel.add(numberOfPeopleComboBox);
+        reservationPanel.add(numberOfNightsLabel);
+        reservationPanel.add(numberOfNightsField);
+        reservationPanel.add(reserveButton);
 
         // Back button to switch back to weather recommendations
         JButton backButton = new JButton("Back to Weather Recommendations");
@@ -167,6 +271,10 @@ public class GUIInterface {
         gbc.gridy = 1;
         mainPanel.add(hotelPanel, gbc);
 
+        // Reservation panel below the hotel panel
+        gbc.gridy = 2;
+        mainPanel.add(reservationPanel, gbc);
+
         // Update the frame content
         frame.getContentPane().removeAll(); // Clear existing components
         frame.getContentPane().add(mainPanel);
@@ -174,6 +282,47 @@ public class GUIInterface {
         frame.revalidate();
         frame.repaint();
     }
+
+    private void makeReservation(Object selectedHotel, String place, int numberOfPeople, int numberOfNights, double meanPrice) {
+        // Implement reservation logic here
+        // You can use the selectedHotel, numberOfPeople, and numberOfNights values
+        // to process the reservation, show confirmation, or handle any other actions.
+        // For now, let's just print the values.
+        System.out.println("Reservation Details:");
+        System.out.println("Hotel: " + selectedHotel);
+        System.out.println("Number of People: " + numberOfPeople);
+        System.out.println("Number of Nights: " + numberOfNights);
+
+        double totalPrice = meanPrice * numberOfNights;
+        System.out.println("Approximate total: " + totalPrice + "€");
+
+        // Create a label to display the reservation details
+        JLabel reservationDetailsLabel = new JLabel("<html><b>Reservation Details:</b><br>"
+                + "Hotel: " + selectedHotel + "<br>"
+                + "Place: " + place + "<br>"
+                + "Number of People: " + numberOfPeople + "<br>"
+                + "Number of Nights: " + numberOfNights + "<br>"
+                + "Approximate total: " + totalPrice + "€</html>");
+
+        // Components for reservation
+        JPanel reservationPanel = new JPanel();
+        reservationPanel.add(reservationDetailsLabel);
+
+        // Button to go back to hotel recommendations
+        JButton backButton = new JButton("Back to Hotel Recommendations");
+        backButton.addActionListener(e -> showHotelRecommendations(place));
+
+        reservationPanel.add(backButton);
+
+        // Update the frame content
+        frame.getContentPane().removeAll(); // Clear existing components
+        frame.getContentPane().add(reservationPanel);
+
+        frame.revalidate();
+        frame.repaint();
+    }
+
+
 
     private Map<String, List<Hotel>> getHotelMap() {
         DatamartProvider datamartProvider = new DatamartProvider("/Users/alejandroalemanaleman/Downloads/");
