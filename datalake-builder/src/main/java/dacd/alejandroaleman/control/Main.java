@@ -11,7 +11,7 @@ public class Main {
 
         try {
             FileEventStoreBuilder builder1 = new FileEventStoreBuilder(args[0]);
-            TopicSubscriber datalakeBuilder = new TopicSubscriber(builder1, "prediction.Weather", "prueba.Hotel", semaphore);
+            TopicSubscriber datalakeBuilder = new TopicSubscriber(builder1, "prediction.Weather", "information.Hotel", semaphore);
             datalakeBuilder.start();
 
             // Iniciar el segundo TopicSubscriber

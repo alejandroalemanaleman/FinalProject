@@ -5,15 +5,15 @@
     <file url="file://$PROJECT_DIR$/datalake-builder/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/hotel-provider/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/hotel-provider/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/mytrip-business-unit/hotel-provider/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/mytrip-business-unit/hotel-provider/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/mytrip-business-unit/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/mytrip-business-unit/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/prediction-provider/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/prediction-provider/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/untitled/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/untitled/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/weather-hotel-recommender/hotel-provider/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/weather-hotel-recommender/hotel-provider/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/weather-hotel-recommender/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/weather-hotel-recommender/src/main/resources" charset="UTF-8" />
   </component>
 </project>

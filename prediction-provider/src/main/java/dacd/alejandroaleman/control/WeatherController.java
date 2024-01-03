@@ -32,6 +32,7 @@ public class WeatherController extends TimerTask {
                 List<Weather> weathers = openWeatherMapSupplier.get(location);
                 jmsWeatherStore.save(weathers);
             }
+            System.out.println("-----[MESSAGE]: ALL DATA SENT.-----");
         }
         catch (StoreException e){
             throw new RuntimeException(e);

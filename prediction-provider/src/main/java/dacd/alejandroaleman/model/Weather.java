@@ -6,7 +6,7 @@ public class Weather {
 
     private final Instant ts;
     private final String ss;
-    private final Instant prediction_ts;
+    private final Instant predictionTs;
     private final Location location;
     private final double temperature;
     private final double precipitation;
@@ -15,10 +15,10 @@ public class Weather {
     private final double windVelocity;
 
 
-    public Weather(double temperature, double precipitation, int humidity, int clouds, double windVelocity, Location location, Instant forecastDate) {
+    public Weather(double temperature, double precipitation, int humidity, int clouds, double windVelocity, Location location, Instant predictionTs) {
         this.ts = Instant.now();
-        this.ss = "WeatherSupplier";
-        this.prediction_ts = forecastDate;
+        this.ss = "Weather-Provider";
+        this.predictionTs = predictionTs;
         this.location = location;
         this.temperature = temperature;
         this.precipitation = precipitation;
@@ -36,7 +36,7 @@ public class Weather {
     }
 
     public Instant getPredictionTime() {
-        return prediction_ts;
+        return predictionTs;
     }
 
     public Location getLocation() {

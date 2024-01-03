@@ -5,7 +5,7 @@ import java.time.Instant;
 import java.util.Date;
 
 public class Weather {
-    private final Instant prediction_ts;
+    private final Instant predictionTs;
     private final String place;
     private final double temperature;
     private final double precipitation;
@@ -14,8 +14,8 @@ public class Weather {
     private final double windVelocity;
 
 
-    public Weather(Instant prediction_ts, String place, Double temperature, double precipitation, int humidity, int clouds, double windVelocity) {
-        this.prediction_ts = prediction_ts;
+    public Weather(Instant predictionTs, String place, Double temperature, double precipitation, int humidity, int clouds, double windVelocity) {
+        this.predictionTs = predictionTs;
         this.place = place;
         this.temperature = temperature;
         this.precipitation = precipitation;
@@ -24,8 +24,8 @@ public class Weather {
         this.windVelocity = windVelocity;
     }
 
-    public Instant getPredictionTime() {
-        return prediction_ts;
+    public Instant getPredictionTs() {
+        return predictionTs;
     }
 
     public String getPlace() {
@@ -55,7 +55,7 @@ public class Weather {
     @Override
     public String toString() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String formattedDate = dateFormat.format(Date.from(prediction_ts));
+        String formattedDate = dateFormat.format(Date.from(predictionTs));
 
         return "Day: " + formattedDate +
                 ", Temperature: " + temperature +

@@ -11,7 +11,7 @@
     <modules>
         <module>prediction-provider</module>
         <module>datalake-builder</module>
-        <module>mytrip-business-unit</module>
+        <module>weather-hotel-recommender</module>
         <module>hotel-provider</module>
     </modules>
 

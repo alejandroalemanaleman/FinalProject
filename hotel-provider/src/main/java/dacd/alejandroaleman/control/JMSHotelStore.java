@@ -21,7 +21,7 @@ public class JMSHotelStore implements HotelStore {
             connection.start();
 
             session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            String topic = "prueba.Hotel"; //TODO cambiar el topic a Information.Hotel ??
+            String topic = "information.Hotel";
             Destination destination = session.createTopic(topic);
             MessageProducer producer = session.createProducer(destination);
 
@@ -34,7 +34,7 @@ public class JMSHotelStore implements HotelStore {
             session.close();
             connection.close();
         } catch (JMSException e) {
-            //throw new StoreException(e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 

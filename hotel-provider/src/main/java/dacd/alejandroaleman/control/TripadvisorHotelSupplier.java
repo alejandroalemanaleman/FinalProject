@@ -23,7 +23,6 @@ public class TripadvisorHotelSupplier implements HotelSupplier{
         return getHotels(links, place);
     }
 
-
     private List<Hotel> getHotels(List<String> links, String place) {
         List<Hotel> hotels = new ArrayList<>();
         for (String link : links) {
@@ -49,7 +48,6 @@ public class TripadvisorHotelSupplier implements HotelSupplier{
                     String rating = (ratingElement != null) ? ratingElement.text() : "Not Available";
 
                     hotels.add(new Hotel(nameHotel, place, priceRange, rating));
-                    //TODO cambiar el resto de módulos para que se adapten al rating.
                     System.out.println(nameHotel + ", place:" + place + ", priceRange:" + priceRange + ", rating:" + rating);
                 }
             }
@@ -68,65 +66,11 @@ public class TripadvisorHotelSupplier implements HotelSupplier{
                     }
                 }
             } else {
-                System.err.println("No se pudo encontrar el archivo en el JAR: " + place + ".txt");
+                System.err.println("Archive: " + place + ".txt ; not found");
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
         return links;
     }
-
-
-
-
-    /*
-    public List<Hotel> void get(Location location) {
-        JsonObject hotelData = getTripAdvisorHotels(location);
-        System.out.println(hotelData);
-       getHotels(hotelData, location);
-       //return getHotels(hotelData, location);
-    }
-
-    public List<Hotel> void getHotels(JsonObject hotelData, Location location){
-        JsonArray listOfHotelsJSON = hotelData.getAsJsonObject("data").getAsJsonArray("data");
-        List<Hotel> hotels = new ArrayList<Hotel>();
-        for (int i = 0; i < listOfHotelsJSON.size(); i++) {
-            JsonObject hotelJson = listOfHotelsJSON.get(i).getAsJsonObject();
-            String hotelName = ""+ hotelJson.get("title").getAsString().replaceFirst("^\\d+\\.\\s", "");
-            System.out.println(hotelName + " PLACE:" + location.getPlace());
-            JsonObject pricePerNight = hotelJson.get("price").getAsJsonObject();
-            Hotel hotel = new Hotel(hotelName, location.getPlace(), pricePerNight.getAsInt());
-        }
-
-    }
-
-    public JsonObject getTripAdvisorHotels(Location location) {
-        try {
-            OkHttpClient client = new OkHttpClient();
-
-            String apiUrl = "https://tripadvisor16.p.rapidapi.com/api/v1/hotels/searchHotelsByLocation?latitude="+ location.getLat() +"&longitude="+ location.getLon() +"&checkIn=2023-12-28&checkOut=2023-12-27&pageNumber=1&currencyCode=EUR";
-            Request request = new Request.Builder()
-                    .url(apiUrl)
-                    .get()
-                    .addHeader("X-RapidAPI-Key", "4c73be2a18mshcefe0220407ac95p14b21fjsn6da25e4915b4")
-                    .addHeader("X-RapidAPI-Host", "tripadvisor16.p.rapidapi.com")
-                    .build();
-
-            Response response = client.newCall(request).execute();
-            String jsonResponse = response.body().string();
-
-            Gson gson = new Gson();
-            return gson.fromJson(jsonResponse, JsonObject.class);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Error in TripadvisorHotelSupplier");
-        }
-        return null;
-
-}
-
-     */
-
-
 }

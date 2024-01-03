@@ -2,15 +2,12 @@ package dacd.alejandroaleman.control;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.sql.*;
 
 public class SQLiteDatamartStore implements DatamartStore{
 
-    private Connection connection;
+    private final Connection connection;
 
     public SQLiteDatamartStore(String path) {
         try {
@@ -40,7 +37,7 @@ public class SQLiteDatamartStore implements DatamartStore{
                     "CREATE TABLE IF NOT EXISTS " + tableName + " (" +
                             "ts TEXT PRIMARY KEY, " +
                             "ss TEXT, " +
-                            "prediction_ts TEXT, " +
+                            "predictionTs TEXT, " +
                             "location_lat TEXT, " +
                             "location_lon TEXT, " +
                             "place TEXT, " +
@@ -68,14 +65,14 @@ public class SQLiteDatamartStore implements DatamartStore{
         try {
             PreparedStatement statement = connection.prepareStatement(
                     "INSERT INTO " + tableName +
-                            "(ts, ss, prediction_ts, location_lat, location_lon, place, " +
+                            "(ts, ss, predictionTs, location_lat, location_lon, place, " +
                             "temperature, precipitation, humidity, clouds, wind_velocity) " +
                             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
             );
 
             statement.setString(1, data.get("ts").getAsString());
             statement.setString(2, data.get("ss").getAsString());
-            statement.setString(3, data.get("prediction_ts").getAsString());
+            statement.setString(3, data.get("predictionTs").getAsString());
             statement.setString(4, data.getAsJsonObject("location").get("lat").getAsString());
             statement.setString(5, data.getAsJsonObject("location").get("lon").getAsString());
             statement.setString(6, data.getAsJsonObject("location").get("place").getAsString());
@@ -100,7 +97,7 @@ public class SQLiteDatamartStore implements DatamartStore{
                             "name TEXT, " +
                             "place TEXT, " +
                             "price TEXT, " +
-                            "rating TEXT) " //+
+                            "rating TEXT) "
 
             );
 
@@ -110,12 +107,58 @@ public class SQLiteDatamartStore implements DatamartStore{
         }
     }
 
-    private void addHotelData(JsonObject data) {
+    private void addOrUpdateHotelData(JsonObject data) {
         String tableName = "Hotels_" + data.get("place").getAsString().replaceAll("\\s", "")
-                .replaceAll("-","_");
+                .replaceAll("-", "_");
         System.out.println(tableName);
         createHotelTable(tableName);
 
+        if (hotelExists(tableName, data.get("name").getAsString())) {
+            updateHotelData(tableName, data);
+        } else {
+            insertHotelData(tableName, data);
+        }
+    }
+
+    private boolean hotelExists(String tableName, String hotelName) {
+        try {
+            String query = "SELECT COUNT(*) FROM " + tableName + " WHERE name = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, hotelName);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                int count = resultSet.getInt(1);
+                return count > 0;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
+    }
+
+    private void updateHotelData(String tableName, JsonObject data) {
+        try {
+            PreparedStatement statement = connection.prepareStatement(
+                    "UPDATE " + tableName +
+                            " SET ts = ?, ss = ?, price = ?, rating = ?" +
+                            " WHERE name = ?"
+            );
+
+            statement.setString(1, data.get("ts").getAsString());
+            statement.setString(2, data.get("ss").getAsString());
+            statement.setString(3, data.get("pricePerNight").getAsString());
+            statement.setString(4, data.get("rating").getAsString());
+            statement.setString(5, data.get("name").getAsString());
+
+            statement.executeUpdate();
+            System.out.println("Hotel updated: " + data);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void insertHotelData(String tableName, JsonObject data) {
         try {
             PreparedStatement statement = connection.prepareStatement(
                     "INSERT INTO " + tableName +
@@ -131,11 +174,12 @@ public class SQLiteDatamartStore implements DatamartStore{
             statement.setString(6, data.get("rating").getAsString());
 
             statement.execute();
-            System.out.println(data);
+            System.out.println("New hotel added: " + data);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
+
 
     public void closeConnection() {
         try {
@@ -151,10 +195,10 @@ public class SQLiteDatamartStore implements DatamartStore{
         try {
             JsonObject jsonObject = JsonParser.parseString(data).getAsJsonObject();
             String ss = jsonObject.get("ss").getAsString();
-            if ("WeatherSupplier".equals(ss)) {
+            if ("Weather-Provider".equals(ss)) {
                 addPredictionData(jsonObject);
             } else if ("Hotel-Provider".equals(ss)) {
-                addHotelData(jsonObject);
+                addOrUpdateHotelData(jsonObject);
             }
             connection.commit(); // Commit the transaction after processing all statements
         } catch (SQLException e) {
@@ -181,8 +225,6 @@ public class SQLiteDatamartStore implements DatamartStore{
         }
         return rowCount;
     }
-
-
 
     private void clearTable(String tableName) {
         // TODO

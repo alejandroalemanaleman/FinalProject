@@ -44,7 +44,7 @@ public class Hotel {
     public double getMeanPrice() {
         // Utilizar expresiones regulares para encontrar números en el formato dado
         Pattern patronNumeros = Pattern.compile("\\d+");
-        if (pricePerNight.equals("Not Available")) return Double.parseDouble(null);
+        if (pricePerNight.equals("Not Available")) return 0.0;
         Matcher matcher = patronNumeros.matcher(pricePerNight);
 
         // Encontrar los números y calcular la media
