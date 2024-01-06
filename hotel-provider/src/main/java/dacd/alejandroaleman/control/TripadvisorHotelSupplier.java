@@ -12,10 +12,8 @@ import java.util.List;
 import java.util.Scanner;
 
 public class TripadvisorHotelSupplier implements HotelSupplier{
-    private final String apiKey;
 
-    public TripadvisorHotelSupplier(String apiKey) {
-        this.apiKey = apiKey;
+    public TripadvisorHotelSupplier() {
     }
 
     public List<Hotel> get(String place) {

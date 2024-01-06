@@ -11,7 +11,7 @@ public class SQLiteDatamartStore implements DatamartStore{
 
     public SQLiteDatamartStore(String path) {
         try {
-            String dbPath = path + "datamart/datamart.db";
+            String dbPath = path + "/datamart/datamart.db";
             new File(dbPath).getParentFile().mkdirs();
             this.connection = connect(dbPath);
             this.connection.setAutoCommit(false);
@@ -35,11 +35,7 @@ public class SQLiteDatamartStore implements DatamartStore{
         try {
             PreparedStatement statement = connection.prepareStatement(
                     "CREATE TABLE IF NOT EXISTS " + tableName + " (" +
-                            "ts TEXT PRIMARY KEY, " +
-                            "ss TEXT, " +
-                            "predictionTs TEXT, " +
-                            "location_lat TEXT, " +
-                            "location_lon TEXT, " +
+                            "predictionTs TEXT PRIMARY KEY, " +
                             "place TEXT, " +
                             "temperature REAL, " +
                             "precipitation REAL, " +
@@ -65,22 +61,18 @@ public class SQLiteDatamartStore implements DatamartStore{
         try {
             PreparedStatement statement = connection.prepareStatement(
                     "INSERT INTO " + tableName +
-                            "(ts, ss, predictionTs, location_lat, location_lon, place, " +
+                            "(predictionTs, place, " +
                             "temperature, precipitation, humidity, clouds, wind_velocity) " +
-                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                            "VALUES (?, ?, ?, ?, ?, ?, ?)"
             );
 
-            statement.setString(1, data.get("ts").getAsString());
-            statement.setString(2, data.get("ss").getAsString());
-            statement.setString(3, data.get("predictionTs").getAsString());
-            statement.setString(4, data.getAsJsonObject("location").get("lat").getAsString());
-            statement.setString(5, data.getAsJsonObject("location").get("lon").getAsString());
-            statement.setString(6, data.getAsJsonObject("location").get("place").getAsString());
-            statement.setDouble(7, data.get("temperature").getAsDouble());
-            statement.setDouble(8, data.get("precipitation").getAsDouble());
-            statement.setInt(9, data.get("humidity").getAsInt());
-            statement.setInt(10, data.get("clouds").getAsInt());
-            statement.setDouble(11, data.get("windVelocity").getAsDouble());
+            statement.setString(1, data.get("predictionTs").getAsString());
+            statement.setString(2, data.getAsJsonObject("location").get("place").getAsString());
+            statement.setDouble(3, data.get("temperature").getAsDouble());
+            statement.setDouble(4, data.get("precipitation").getAsDouble());
+            statement.setInt(5, data.get("humidity").getAsInt());
+            statement.setInt(6, data.get("clouds").getAsInt());
+            statement.setDouble(7, data.get("windVelocity").getAsDouble());
 
             statement.execute();
         } catch (SQLException e) {
@@ -92,11 +84,9 @@ public class SQLiteDatamartStore implements DatamartStore{
         try {
             PreparedStatement statement = connection.prepareStatement(
                     "CREATE TABLE IF NOT EXISTS " + tableName + " (" +
-                            "ts TEXT PRIMARY KEY, " +
-                            "ss TEXT, " +
-                            "name TEXT, " +
+                            "name TEXT PRIMARY KEY, " +
                             "place TEXT, " +
-                            "price TEXT, " +
+                            "priceRangePerNight TEXT, " +
                             "rating TEXT) "
 
             );
@@ -141,15 +131,13 @@ public class SQLiteDatamartStore implements DatamartStore{
         try {
             PreparedStatement statement = connection.prepareStatement(
                     "UPDATE " + tableName +
-                            " SET ts = ?, ss = ?, price = ?, rating = ?" +
+                            " SET priceRangePerNight = ?, rating = ?" +
                             " WHERE name = ?"
             );
 
-            statement.setString(1, data.get("ts").getAsString());
-            statement.setString(2, data.get("ss").getAsString());
-            statement.setString(3, data.get("pricePerNight").getAsString());
-            statement.setString(4, data.get("rating").getAsString());
-            statement.setString(5, data.get("name").getAsString());
+            statement.setString(1, data.get("priceRangePerNight").getAsString());
+            statement.setString(2, data.get("rating").getAsString());
+            statement.setString(3, data.get("name").getAsString());
 
             statement.executeUpdate();
             System.out.println("Hotel updated: " + data);
@@ -162,16 +150,14 @@ public class SQLiteDatamartStore implements DatamartStore{
         try {
             PreparedStatement statement = connection.prepareStatement(
                     "INSERT INTO " + tableName +
-                            " (ts, ss, name, place, price, rating) " +
-                            "VALUES (?, ?, ?, ?, ?, ?)"
+                            " (name, place, priceRangePerNight, rating) " +
+                            "VALUES (?, ?, ?, ?)"
             );
 
-            statement.setString(1, data.get("ts").getAsString());
-            statement.setString(2, data.get("ss").getAsString());
-            statement.setString(3, data.get("name").getAsString());
-            statement.setString(4, data.get("place").getAsString());
-            statement.setString(5, data.get("pricePerNight").getAsString());
-            statement.setString(6, data.get("rating").getAsString());
+            statement.setString(1, data.get("name").getAsString());
+            statement.setString(2, data.get("place").getAsString());
+            statement.setString(3, data.get("priceRangePerNight").getAsString());
+            statement.setString(4, data.get("rating").getAsString());
 
             statement.execute();
             System.out.println("New hotel added: " + data);

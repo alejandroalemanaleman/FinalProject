@@ -7,7 +7,7 @@ public class Main {
         Timer timer = new Timer();
         long delay = 0;
         long interval = 10 * 60 * 60 * 1000;
-        HotelController hotelController = new HotelController(new TripadvisorHotelSupplier(args[0]), new JMSHotelStore());
+        HotelController hotelController = new HotelController(new TripadvisorHotelSupplier(), new JMSHotelStore());
         timer.schedule(hotelController, delay, interval);
     }
 }

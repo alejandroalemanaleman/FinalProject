@@ -7,21 +7,21 @@ import java.util.regex.Pattern;
 public class Hotel {
     private final String name;
     private final String place;
-    private final String pricePerNight;
+    private final String priceRangePerNight;
     private final String rating;
 
 
-    public Hotel(String name, String place, String pricePerNight, String rating) {
+    public Hotel(String name, String place, String priceRangePerNight, String rating) {
         this.name = name;
         this.place = place;
-        this.pricePerNight = pricePerNight;
+        this.priceRangePerNight = priceRangePerNight;
         this.rating = rating;
     }
 
     @Override
     public String toString() {
         return "Hotel: " + name +
-                ", PricePerNight: " + pricePerNight
+                ", PricePerNight: " + priceRangePerNight
                 + ", Rating: " + rating;
     }
 
@@ -33,8 +33,8 @@ public class Hotel {
         return place;
     }
 
-    public String getPricePerNight() {
-        return pricePerNight;
+    public String priceRangePerNight() {
+        return priceRangePerNight;
     }
 
     public String getRating() {
@@ -44,8 +44,8 @@ public class Hotel {
     public double getMeanPrice() {
         // Utilizar expresiones regulares para encontrar números en el formato dado
         Pattern patronNumeros = Pattern.compile("\\d+");
-        if (pricePerNight.equals("Not Available")) return 0.0;
-        Matcher matcher = patronNumeros.matcher(pricePerNight);
+        if (priceRangePerNight.equals("Not Available")) return 0.0;
+        Matcher matcher = patronNumeros.matcher(priceRangePerNight);
 
         // Encontrar los números y calcular la media
         int suma = 0;

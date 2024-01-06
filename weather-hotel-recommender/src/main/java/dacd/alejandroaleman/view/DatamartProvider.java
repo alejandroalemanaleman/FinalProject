@@ -25,7 +25,7 @@ public class DatamartProvider {
     public DatamartProvider(String path, List<String> places) {
         try {
             this.places = places;
-            dbPath = path + "datamart/datamart.db";
+            dbPath = path + "/datamart/datamart.db";
             new File(dbPath).getParentFile().mkdirs();
             this.connection = connect(dbPath);
             this.connection.setAutoCommit(false);
@@ -78,9 +78,9 @@ public class DatamartProvider {
                  ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String name = resultSet.getString("name");
-                    String pricePerNight = resultSet.getString("price"); //TODO pricePerNight
+                    String priceRangePerNight = resultSet.getString("priceRangePerNight"); //TODO pricePerNight
                     String rating = resultSet.getString("rating");
-                    hotels.add(new Hotel(name, place, pricePerNight, rating));
+                    hotels.add(new Hotel(name, place, priceRangePerNight, rating));
                 }
                 hotelsFromPlaces.put(place, hotels);
             } catch (SQLException e) {

@@ -8,7 +8,6 @@ import java.util.*;
 import java.util.List;
 
 public class SwingGUIController implements GUIController {
-
     private JFrame frame;
     private JComboBox<String> islandComboBox;
     private DatamartProvider datamartProvider;
@@ -43,15 +42,13 @@ public class SwingGUIController implements GUIController {
         mainPanel.add(label);
         frame.getContentPane().add(mainPanel);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        frame.setUndecorated(true);  // Removes window decorations (title bar, borders)
+        frame.setUndecorated(true);
         frame.setVisible(true);
     }
 
     private void showRecommendation() {
         Map<String, List<Weather>> weatherMap = datamartProvider.getPrediction();
         String recommendation = new PlaceRecommendationCalculator(weatherMap).calculateRecommendationScore();
-
-        System.out.println("Recommendation: " + recommendation);
 
         JLabel recommendationMessage = new JLabel("Based on the prediction of the weather for the next five days, it is considered more appropriate to travel to");
         recommendationMessage.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -76,8 +73,8 @@ public class SwingGUIController implements GUIController {
         gbc.gridy = 2;
         recommendationPanel.add(islandComboBox, gbc);
 
-        JButton otherWeatherButton = new JButton("View Weather for Other Islands");
-        otherWeatherButton.addActionListener(e -> showWeatherPredictions((String) islandComboBox.getSelectedItem()));
+        JButton otherWeatherButton = new JButton("Show me weather predictions for this island");
+        otherWeatherButton.addActionListener(e -> showOtherPredictions((String) islandComboBox.getSelectedItem()));
         gbc.gridy = 3;
         recommendationPanel.add(otherWeatherButton, gbc);
 
@@ -116,11 +113,13 @@ public class SwingGUIController implements GUIController {
         frame.repaint();
     }
 
-    private void showWeatherPredictions(String selectedIsland) {
+    private void showOtherPredictions(String selectedPlace) {
         Map<String, List<Weather>> weatherMap = datamartProvider.getPrediction();
 
-        JLabel otherWeatherMessage = new JLabel("Weather Predictions for " + selectedIsland + ":");
+        JLabel otherWeatherMessage = new JLabel("Weather Predictions for");
         otherWeatherMessage.setFont(new Font("Arial", Font.PLAIN, 14));
+        JLabel selectedPlaceLabel = new JLabel(selectedPlace);
+        selectedPlaceLabel.setFont(new Font("Arial", Font.BOLD, 29));
 
         JPanel otherWeatherPanel = new JPanel();
         otherWeatherPanel.setLayout(new GridBagLayout());
@@ -129,15 +128,16 @@ public class SwingGUIController implements GUIController {
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.CENTER;
         otherWeatherPanel.add(otherWeatherMessage, gbc);
+        gbc.gridy++;
+        otherWeatherPanel.add(selectedPlaceLabel, gbc);
+        gbc.gridy++;
 
-        gbc.gridy = 1;
-        if (weatherMap.containsKey(selectedIsland)) {
-            List<Weather> weathers = weatherMap.get(selectedIsland);
+        if (weatherMap.containsKey(selectedPlace)) {
+            List<Weather> weathers = weatherMap.get(selectedPlace);
             JScrollPane weatherScrollPane = createWeatherScrollPane(weathers);
             otherWeatherPanel.add(weatherScrollPane, gbc);
         }
 
-        // Botón para volver a las recomendaciones originales
         JButton backButton = new JButton("Back to Original Recommendations");
         backButton.addActionListener(e -> showRecommendation());
         gbc.gridy++;
@@ -147,7 +147,7 @@ public class SwingGUIController implements GUIController {
         mainPanel.setLayout(new GridBagLayout());
 
         JButton hotelButton = new JButton("Show Hotel Recommendations");
-        hotelButton.addActionListener(e -> showHotelRecommendations(selectedIsland));
+        hotelButton.addActionListener(e -> showHotelRecommendations(selectedPlace));
         gbc.gridy = 4;
         mainPanel.add(hotelButton, gbc);
 
@@ -162,10 +162,11 @@ public class SwingGUIController implements GUIController {
         frame.repaint();
     }
 
+
     private void showHotelRecommendations(String recommendation) {
         Map<String, List<Hotel>> hotelMap = datamartProvider.getHotels();
 
-        JLabel recommendationMessage = new JLabel("Based on the analysis, these are the hotels we recommend while staying at");
+        JLabel recommendationMessage = new JLabel("These are the hotels we recommend while staying at");
         recommendationMessage.setFont(new Font("Arial", Font.PLAIN, 14));
 
         JLabel recommendationHotel = new JLabel(recommendation);
@@ -181,9 +182,7 @@ public class SwingGUIController implements GUIController {
 
         gbc.gridy = 1;
         recommendationPanel.add(recommendationHotel, gbc);
-
         JPanel hotelPanel = new JPanel();
-
         List<Hotel> hotels = hotelMap.get(recommendation);
         JScrollPane hotelScrollPane = createHotelScrollPane(hotels);
         hotelPanel.add(hotelScrollPane);
@@ -194,12 +193,12 @@ public class SwingGUIController implements GUIController {
                 .map(Hotel::getName)
                 .toArray(String[]::new));
 
-        JLabel numberOfPeopleLabel = new JLabel("Select number of guests:");
-        JComboBox<Integer> numberOfPeopleComboBox = new JComboBox<>(new Integer[]{1, 2, 3, 4});
+        JLabel numberOfPeopleLabel = new JLabel("Select number of rooms:");
+        JComboBox<Integer> numberOfRoomsComboBox = new JComboBox<>(new Integer[]{1, 2, 3});
         JLabel numberOfNightsLabel = new JLabel("Select number of nights:");
         JComboBox<Integer> numberOfNightsField = new JComboBox<>(new Integer[]{1, 2, 3, 4});
 
-        JButton reserveButton = new JButton("Reserve");
+        JButton reserveButton = new JButton("Calculate approximate total price");
         reserveButton.addActionListener(e -> {
             OptionalDouble priceOptional = hotels.stream()
                     .filter(hotel -> hotel.getName().equals(hotelComboBox.getSelectedItem()))
@@ -210,7 +209,7 @@ public class SwingGUIController implements GUIController {
                 double price = priceOptional.getAsDouble();
 
                 makeReservation(hotelComboBox.getSelectedItem(), recommendation,
-                        (Integer) numberOfPeopleComboBox.getSelectedItem(),
+                        (Integer) numberOfRoomsComboBox.getSelectedItem(),
                         (Integer) numberOfNightsField.getSelectedItem(),
                         price);
             } else {
@@ -222,7 +221,7 @@ public class SwingGUIController implements GUIController {
         reservationPanel.add(selectHotelLabel);
         reservationPanel.add(hotelComboBox);
         reservationPanel.add(numberOfPeopleLabel);
-        reservationPanel.add(numberOfPeopleComboBox);
+        reservationPanel.add(numberOfRoomsComboBox);
         reservationPanel.add(numberOfNightsLabel);
         reservationPanel.add(numberOfNightsField);
         reservationPanel.add(reserveButton);
@@ -253,19 +252,19 @@ public class SwingGUIController implements GUIController {
         frame.repaint();
     }
 
-    private void makeReservation(Object selectedHotel, String place, int numberOfPeople, int numberOfNights, double meanPrice) {
+    private void makeReservation(Object selectedHotel, String place, int numberOfRooms, int numberOfNights, double meanPrice) {
         System.out.println("Reservation Details:");
         System.out.println("Hotel: " + selectedHotel);
-        System.out.println("Number of People: " + numberOfPeople);
+        System.out.println("Number of Rooms: " + numberOfRooms);
         System.out.println("Number of Nights: " + numberOfNights);
 
-        double totalPrice = meanPrice * numberOfNights;
+        double totalPrice = meanPrice * numberOfNights * numberOfRooms;
         System.out.println("Approximate total: " + totalPrice + "€");
 
         JLabel reservationDetailsLabel = new JLabel("<html><b>Reservation Details:</b><br>"
                 + "Hotel: " + selectedHotel + "<br>"
                 + "Place: " + place + "<br>"
-                + "Number of People: " + numberOfPeople + "<br>"
+                + "Number of Rooms: " + numberOfRooms + "<br>"
                 + "Number of Nights: " + numberOfNights + "<br>"
                 + "Approximate total: " + totalPrice + "€</html>");
 
@@ -286,16 +285,14 @@ public class SwingGUIController implements GUIController {
 
     private JScrollPane createHotelScrollPane(List<Hotel> hotels) {
         JPanel hotelPanel = new JPanel();
-        hotelPanel.setLayout(new GridLayout(0, 1, 0, 10)); // Increase the last parameter (10 in this example) to add more space
+        hotelPanel.setLayout(new GridLayout(0, 1, 0, 10));
 
         for (Hotel hotel : hotels) {
             JLabel hotelLabel = new JLabel(hotel.toString());
             hotelPanel.add(hotelLabel);
         }
-
         JScrollPane scrollPane = new JScrollPane(hotelPanel);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-
         return scrollPane;
     }
 
@@ -319,6 +316,6 @@ public class SwingGUIController implements GUIController {
     }
 
     public static void main(String[] args) {
-        //new SwingGUIController().execute();
+        new SwingGUIController(new DatamartProvider("/Users/alejandroalemanaleman/Downloads/probandooooooooaaa", List.of("La Graciosa", "Lanzarote", "Fuerteventura", "Gran Canaria", "Tenerife", "La Gomera", "La Palma", "El Hierro"))).execute();
     }
 }
