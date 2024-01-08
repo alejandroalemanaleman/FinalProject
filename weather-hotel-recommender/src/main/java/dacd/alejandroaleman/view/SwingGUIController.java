@@ -314,8 +314,4 @@ public class SwingGUIController implements GUIController {
         String imagePath = "/" + recommendation.replaceAll(" ", "_") + "_image.jpg";
         return getClass().getResource(imagePath);
     }
-
-    public static void main(String[] args) {
-        new SwingGUIController(new DatamartProvider("/Users/alejandroalemanaleman/Downloads/probandooooooooaaa", List.of("La Graciosa", "Lanzarote", "Fuerteventura", "Gran Canaria", "Tenerife", "La Gomera", "La Palma", "El Hierro"))).execute();
-    }
 }

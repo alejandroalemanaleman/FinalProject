@@ -11,19 +11,19 @@ public class PlaceRecommendationCalculator {
     }
 
     public String calculateRecommendation(Map<String, List<Weather>> weatherMap) {
-        String bestIsland = null;
+        String bestPlace = null;
         double bestScore = Double.MIN_VALUE;
 
         for (Map.Entry<String, List<Weather>> entry : weatherMap.entrySet()) {
-            String island = entry.getKey();
+            String place = entry.getKey();
             List<Weather> weatherList = entry.getValue();
             double score = calculateScore(weatherList);
             if (score > bestScore) {
-                bestIsland = island;
+                bestPlace = place;
                 bestScore = score;
             }
         }
-        return bestIsland;
+        return bestPlace;
     }
 
     private double calculateScore(List<Weather> weatherList) {
