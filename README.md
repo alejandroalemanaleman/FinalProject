@@ -47,17 +47,17 @@ The following design patterns and principles have been applied:
 
 **Single Responsibility Principle (SRP):** Each class should have only one reason to change. For example, the `SQLDatamartStore` class is responsible for storing and updating the datamart, while the `TopicSubscriber` class is responsible for consuming the events from the broker.
 
-**Open/Closed Principle (OCP):** Classes should be designed to be extended without modifying their original source code. For example, new locations (`Location`) or hotel providers (`WeatherSupplier`) can be added without changing existing classes.
+**Open/Closed Principle (OCP):** Classes should be designed to be extended without modifying their original source code. For example, new locations (`Location`) or weather providers (`WeatherSupplier`) can be added without changing existing classes.
 
 **Observer Pattern:**
 The use of Timer and TimerTask in the Main class indicates a form of periodic observation or event scheduling. The HotelController and WeatherController extends TimerTask, and its run method is periodically executed, triggering tasks.
 
 ## Class Diagram
+#### Hotel-provider
+<img width="650" alt="Hotel-provider" src="https://github.com/alejandroalemanaleman/FinalProject/assets/145342887/9df00046-ab9a-444a-8bdd-1d905d72ed3b">
+
 #### Prediction-provider
 <img width="650" alt="Predcition-provider" src="https://github.com/alejandroalemanaleman/Memoria/assets/145342887/959ed319-3d18-4b23-aa9b-fae9c64fb499">
-
-#### Hotel-provider
-<img width="650" alt="Hotel-provider" src="https://github.com/alejandroalemanaleman/Memoria/assets/145342887/a7a4c7c9-e0b1-4047-9e8a-b704e631d23b">
 
 #### Datalake-builder
 <img width="650" alt="Datalake-builder" src="https://github.com/alejandroalemanaleman/Memoria/assets/145342887/2ff1caef-d9e1-43df-ba5a-701419401e5c">
@@ -77,7 +77,7 @@ The use of Timer and TimerTask in the Main class indicates a form of periodic ob
 - **`Timer`:** It schedules tasks and is utilized to execute the `HotelController` periodically.
 - **`HotelController`:** It orchestrates the flow of the application and manages the periodic execution of hotel-related tasks.
 
-#### `WeatherController`:
+#### `HotelController`:
 
 **Dependencies:**
 - **`TripadvisorHotelSupplier`:** It depends on this class to obtain hotel information.
@@ -184,7 +184,7 @@ These dependency relationships illustrate how each class collaborates to fulfill
 **Execution:**
 - Calls the `start` method, which initiates the JMS connection, creates a durable subscriber, and processes incoming messages.
 
-#### `EventStoreBuilder`:
+#### `FileEventStoreBuilder`:
 
 **Dependencies:**
 - **`SaveException`:** It throws this exception when there's an issue saving the event.
