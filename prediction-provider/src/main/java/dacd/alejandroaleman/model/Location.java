@@ -18,5 +18,4 @@ public class Location {
         return lon;
     }
     public String getPlace() {return place;}
-
 }

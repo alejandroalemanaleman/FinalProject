@@ -11,16 +11,12 @@ public class Main {
     public static void main(String[] args) {
         Semaphore semaphore = new Semaphore(1);
         try {
-            DatamartController datamartController = new DatamartController(new TopicSubscriber(new SQLiteDatamartStore(args[0]), "prediction.Weather", "information.Hotel", semaphore));
-            datamartController.excute();
-
-        } catch (ReceiverException e) {
-            throw new RuntimeException(e);
-        }
-        try {
+            TopicSubscriber topicSubscriber = new TopicSubscriber(new SQLiteDatamartStore(args[0]), "prediction.Weather", "information.Hotel", semaphore);
+            topicSubscriber.start();
             Thread.sleep(60000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+
+        } catch (ReceiverException | InterruptedException e) {
+            throw new RuntimeException(e);
         }
         finally {
             new SwingGUIController(new DatamartProvider(args[0], List.of("La Graciosa", "Lanzarote", "Fuerteventura", "Gran Canaria", "Tenerife", "La Gomera", "La Palma", "El Hierro"))).execute();

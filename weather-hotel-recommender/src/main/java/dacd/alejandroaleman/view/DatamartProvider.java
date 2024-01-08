@@ -1,7 +1,5 @@
 package dacd.alejandroaleman.view;
 
-import com.google.gson.JsonObject;
-import com.google.gson.annotations.JsonAdapter;
 import dacd.alejandroaleman.model.Hotel;
 import dacd.alejandroaleman.model.Weather;
 
@@ -34,7 +32,7 @@ public class DatamartProvider {
         }
     }
 
-    public Connection connect(String dbPath) {
+    private Connection connect(String dbPath) {
         try {
             String url = "jdbc:sqlite:" + dbPath;
             Connection conn = DriverManager.getConnection(url);
@@ -45,11 +43,11 @@ public class DatamartProvider {
         }
     }
 
-    public Map<String, List<Weather>> getPrediction() {
+    public Map<String, List<Weather>> getPredictions() {
         Map<String, List<Weather>> predictionsFromPlaces = new HashMap<>();
         for (String place : places){
             List<Weather> weathers = new ArrayList<>();
-            String tableName = "Prediction_" + place.replaceAll(" ", "_"); //TODO DEBERIA SER PREDICTIONS EN TODO
+            String tableName = "Prediction_" + place.replaceAll(" ", "_");
             try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM " + tableName);
                  ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
@@ -78,7 +76,7 @@ public class DatamartProvider {
                  ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String name = resultSet.getString("name");
-                    String priceRangePerNight = resultSet.getString("priceRangePerNight"); //TODO pricePerNight
+                    String priceRangePerNight = resultSet.getString("priceRangePerNight");
                     String rating = resultSet.getString("rating");
                     hotels.add(new Hotel(name, place, priceRangePerNight, rating));
                 }
@@ -88,22 +86,5 @@ public class DatamartProvider {
             }
         }
         return hotelsFromPlaces;
-    }
-
-    public static void main(String[] args) {
-        System.out.println(args[0]);
-        List<String> placesList = new ArrayList<>();
-        placesList.add("La Graciosa");
-        placesList.add("Lanzarote");
-        placesList.add("Fuerteventura");
-        placesList.add("Gran Canaria");
-        placesList.add("Tenerife");
-        placesList.add("La Gomera");
-        placesList.add("La Palma");
-        placesList.add("El Hierro");
-        DatamartProvider datamartProvider = new DatamartProvider(args[0], placesList);
-
-        datamartProvider.getHotels();
-        datamartProvider.getPrediction();
     }
 }

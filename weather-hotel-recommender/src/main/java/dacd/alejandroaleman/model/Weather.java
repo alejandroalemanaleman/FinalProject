@@ -57,11 +57,10 @@ public class Weather {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String formattedDate = dateFormat.format(Date.from(predictionTs));
 
-        return "Day: " + formattedDate +
-                ", Temperature: " + temperature +
-                ", Precipitation: " + precipitation +
-                ", Humidity: " + humidity +
-                ", Clouds: " + clouds +
-                ", Wind Velocity: " + windVelocity;
+        return String.format("Day: %-12s  Temperature: %-5.2f  Precipitation: %-5.2f  Humidity: %-3d  Clouds: %-3d  Wind Velocity: %-5.2f",
+                formattedDate, temperature, precipitation, humidity, clouds, windVelocity);
     }
+
+
+
 }

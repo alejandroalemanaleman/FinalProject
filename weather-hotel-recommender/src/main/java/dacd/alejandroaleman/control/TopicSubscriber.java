@@ -51,7 +51,7 @@ public class TopicSubscriber implements Subscriber {
         } catch (JMSException e) {
             throw new RuntimeException(e);
         } finally {
-            semaphore.release(); // Liberar el semáforo para permitir que el siguiente consumidor comience
+            semaphore.release();
         }
     }
 }

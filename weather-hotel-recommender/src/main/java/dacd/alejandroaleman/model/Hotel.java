@@ -41,13 +41,15 @@ public class Hotel {
         return rating;
     }
 
+    public String getPriceRangePerNight() {
+        return priceRangePerNight;
+    }
+
     public double getMeanPrice() {
-        // Utilizar expresiones regulares para encontrar números en el formato dado
         Pattern patronNumeros = Pattern.compile("\\d+");
         if (priceRangePerNight.equals("Not Available")) return 0.0;
         Matcher matcher = patronNumeros.matcher(priceRangePerNight);
 
-        // Encontrar los números y calcular la media
         int suma = 0;
         int contador = 0;
         while (matcher.find()) {
@@ -56,13 +58,10 @@ public class Hotel {
             contador++;
         }
 
-        // Calcular la media
         if (contador > 0) {
             return (double) suma / contador;
         } else {
-            // Manejar el caso en el que no se encuentran números
             return 0.0;
         }
     }
 }
-//RATIING

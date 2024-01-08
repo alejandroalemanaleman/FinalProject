@@ -1,7 +1,6 @@
 package dacd.alejandroaleman.control;
 
-import dacd.alejandroaleman.control.exceptions.ReceiverException;
-import dacd.alejandroaleman.control.exceptions.SaveException;
+import dacd.alejandroaleman.control.exceptions.*;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
 import javax.jms.*;
@@ -53,7 +52,7 @@ public class TopicSubscriber implements Subscriber {
         } catch (JMSException | SaveException e) {
             throw new RuntimeException(e);
         } finally {
-            semaphore.release(); // Liberar el semáforo para permitir que el siguiente consumidor comience
+            semaphore.release();
         }
     }
 }

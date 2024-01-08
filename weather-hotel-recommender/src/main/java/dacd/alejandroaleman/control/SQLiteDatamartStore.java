@@ -20,7 +20,27 @@ public class SQLiteDatamartStore implements DatamartStore{
         }
     }
 
-    public Connection connect(String dbPath) {
+    public void save (String data){
+        try {
+            JsonObject jsonObject = JsonParser.parseString(data).getAsJsonObject();
+            String ss = jsonObject.get("ss").getAsString();
+            if ("Weather-Provider".equals(ss)) {
+                addPredictionData(jsonObject);
+            } else if ("Hotel-Provider".equals(ss)) {
+                addHotelData(jsonObject);
+            }
+            connection.commit(); // Commit the transaction after processing all statements
+        } catch (SQLException e) {
+            try {
+                connection.rollback(); // Rollback the transaction in case of an exception
+            } catch (SQLException rollbackException) {
+                throw new RuntimeException("Error rolling back transaction", rollbackException);
+            }
+            throw new RuntimeException("Error saving data", e);
+        }
+    }
+
+    private Connection connect(String dbPath) {
         try {
             String url = "jdbc:sqlite:" + dbPath;
             Connection conn = DriverManager.getConnection(url);
@@ -51,7 +71,7 @@ public class SQLiteDatamartStore implements DatamartStore{
         }
     }
 
-    public void addPredictionData(JsonObject data) {
+    private void addPredictionData(JsonObject data) {
         String tableName = "Prediction_" + data.getAsJsonObject("location").get("place").getAsString().replaceAll("\\s", "")
                 .replaceAll("-","_");
         System.out.println(tableName);
@@ -97,7 +117,7 @@ public class SQLiteDatamartStore implements DatamartStore{
         }
     }
 
-    private void addOrUpdateHotelData(JsonObject data) {
+    private void addHotelData(JsonObject data) {
         String tableName = "Hotels_" + data.get("place").getAsString().replaceAll("\\s", "")
                 .replaceAll("-", "_");
         System.out.println(tableName);
@@ -106,7 +126,23 @@ public class SQLiteDatamartStore implements DatamartStore{
         if (hotelExists(tableName, data.get("name").getAsString())) {
             updateHotelData(tableName, data);
         } else {
-            insertHotelData(tableName, data);
+            try {
+                PreparedStatement statement = connection.prepareStatement(
+                        "INSERT INTO " + tableName +
+                                " (name, place, priceRangePerNight, rating) " +
+                                "VALUES (?, ?, ?, ?)"
+                );
+
+                statement.setString(1, data.get("name").getAsString());
+                statement.setString(2, data.get("place").getAsString());
+                statement.setString(3, data.get("priceRangePerNight").getAsString());
+                statement.setString(4, data.get("rating").getAsString());
+
+                statement.execute();
+                System.out.println("New hotel added: " + data);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -146,58 +182,7 @@ public class SQLiteDatamartStore implements DatamartStore{
         }
     }
 
-    private void insertHotelData(String tableName, JsonObject data) {
-        try {
-            PreparedStatement statement = connection.prepareStatement(
-                    "INSERT INTO " + tableName +
-                            " (name, place, priceRangePerNight, rating) " +
-                            "VALUES (?, ?, ?, ?)"
-            );
-
-            statement.setString(1, data.get("name").getAsString());
-            statement.setString(2, data.get("place").getAsString());
-            statement.setString(3, data.get("priceRangePerNight").getAsString());
-            statement.setString(4, data.get("rating").getAsString());
-
-            statement.execute();
-            System.out.println("New hotel added: " + data);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    public void closeConnection() {
-        try {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void save (String data){
-        try {
-            JsonObject jsonObject = JsonParser.parseString(data).getAsJsonObject();
-            String ss = jsonObject.get("ss").getAsString();
-            if ("Weather-Provider".equals(ss)) {
-                addPredictionData(jsonObject);
-            } else if ("Hotel-Provider".equals(ss)) {
-                addOrUpdateHotelData(jsonObject);
-            }
-            connection.commit(); // Commit the transaction after processing all statements
-        } catch (SQLException e) {
-            try {
-                connection.rollback(); // Rollback the transaction in case of an exception
-            } catch (SQLException rollbackException) {
-                throw new RuntimeException("Error rolling back transaction", rollbackException);
-            }
-            throw new RuntimeException("Error saving data", e);
-        }
-    }
-
-    public int countRowsInTable(String tableName) {
+    private int countRowsInTable(String tableName) {
         int rowCount = 0;
         try {
             Statement statement = connection.createStatement();
@@ -213,7 +198,6 @@ public class SQLiteDatamartStore implements DatamartStore{
     }
 
     private void clearTable(String tableName) {
-        // TODO
         try {
             PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM " + tableName);
             deleteStatement.executeUpdate();

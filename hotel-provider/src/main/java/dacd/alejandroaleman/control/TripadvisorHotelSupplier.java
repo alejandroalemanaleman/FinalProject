@@ -53,8 +53,7 @@ public class TripadvisorHotelSupplier implements HotelSupplier{
         return hotels;
     }
 
-
-    public List<String> getHotelLinks(String place) {
+    private List<String> getHotelLinks(String place) {
         List<String> links = new ArrayList<>();
         try (InputStream inputStream = Main.class.getClassLoader().getResourceAsStream(place + ".txt")) {
             if (inputStream != null) {
